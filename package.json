@@ -1,0 +1,9 @@
+{
+  "name": "worms-ii",
+  "version": "0.0.0",
+  "description": "Worms II in browser. Again",
+  "scripts": {
+  },
+  "author": "P.U. Turtle",
+  "license": "MIT"
+}
