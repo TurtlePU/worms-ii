@@ -2,8 +2,13 @@
   "name": "worms-ii",
   "version": "0.0.0",
   "description": "Worms II in browser. Again",
-  "scripts": {
-  },
+  "scripts": {},
   "author": "P.U. Turtle",
-  "license": "MIT"
+  "license": "MIT",
+  "repository": {
+    "url": "https://github.com/TurtlePU/worms-ii.git"
+  },
+  "dependencies": {
+    "express": "^4.17.1"
+  }
 }
