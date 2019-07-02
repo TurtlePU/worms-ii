@@ -2,7 +2,15 @@
   "name": "worms-ii",
   "version": "0.0.0",
   "description": "Worms II in browser. Again",
-  "scripts": {},
+  "scripts": {
+    "build-server": "rm -rf server/build && parcel build server/src/server.js -t node -d server/build --no-source-maps",
+    "build-client": "rm -rf client/build && parcel build client/src/index.html -d client/build --no-source-maps",
+    "build": "npm run build-server && npm run build-client",
+    "start": "node server/build/server.js",
+    "watch-server": "rm -rf server/dist && parcel server/src/server.js -t node -d server/dist",
+    "watch-client": "rm -rf client/dist && parcel watch client/src/index.html -d client/dist",
+    "dev-server": "cross-env DEV_SERVER=true nodemon server/dist/server.js"
+  },
   "author": "P.U. Turtle",
   "license": "MIT",
   "repository": {
@@ -10,5 +18,10 @@
   },
   "dependencies": {
     "express": "^4.17.1"
+  },
+  "devDependencies": {
+    "cross-env": "^5.2.0",
+    "nodemon": "^1.19.1",
+    "parcel-bundler": "^1.12.3"
   }
 }
