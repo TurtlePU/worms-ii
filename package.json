@@ -4,11 +4,11 @@
   "description": "Worms II in browser. Again",
   "scripts": {
     "build-server": "rimraf server/build && parcel build server/src/server.js -t node -d server/build --no-source-maps",
-    "build-client": "rimraf client/build && parcel build client/src/index.html -d client/build --no-source-maps",
+    "build-client": "rimraf client/build && parcel build client/src/*.html -d client/build --no-source-maps",
     "build": "npm run build-server && npm run build-client",
     "start": "node server/build/server.js",
     "watch-server": "rimraf server/dist && parcel server/src/server.js -t node -d server/dist",
-    "watch-client": "rimraf client/dist && parcel watch client/src/index.html -d client/dist",
+    "watch-client": "rimraf client/dist && parcel watch client/src/*.html -d client/dist",
     "dev-server": "cross-env DEV_SERVER=true nodemon server/dist/server.js"
   },
   "author": "P.U. Turtle",
@@ -20,6 +20,8 @@
     "express": "^4.17.1"
   },
   "devDependencies": {
+    "@babel/core": "^7.4.5",
+    "@babel/plugin-transform-runtime": "^7.4.4",
     "cross-env": "^5.2.0",
     "nodemon": "^1.19.1",
     "parcel-bundler": "^1.12.3",
