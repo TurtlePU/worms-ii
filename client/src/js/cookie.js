@@ -1,6 +1,6 @@
 /**
  * Gets a cookie by given name.
- *
+ * 
  * @export
  * @param {string} name name of the cookie
  * @returns cookie by given name.
