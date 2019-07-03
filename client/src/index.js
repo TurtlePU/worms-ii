@@ -34,7 +34,7 @@ function main() {
     });
 
     b_rand.addEventListener('click', async () => {
-        inp_room.value = await (await fetch('/room_id')).text();
+        inp_room.value = await (await fetch('/.room_id')).text();
         a_join.click();
     });
 
