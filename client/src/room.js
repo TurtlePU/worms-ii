@@ -1,3 +1,5 @@
+import io from 'socket.io-client';
+
 import * as Cookie from './js/cookie';
 import { $, fail, request } from './js/util';
 
@@ -32,14 +34,15 @@ async function main() {
     t_room = $('t-room');
 
     inp_ready.addEventListener('click', () => {
-        socket.emit('client:room#ready', inp_ready.enabled);
+        console.log(inp_ready.checked);
+        socket.emit('client:room#ready', inp_ready.checked);
     });
 
     b_start.addEventListener('click', () => {
         socket.emit('client:room#start');
     });
 
-    room_id = document.location.pathname.match(/\/room\/(.*)/)[1];
+    room_id = window.location.pathname.match(/\/room=(.*)/)[1];
 
     socket = io();
 
@@ -53,6 +56,7 @@ async function main() {
     let me = join_result.me;
 
     let members = await request(`/.room.get_members/id=${room_id}`, 'json');
+    console.log(members);
     for (let { id, ready } of members) {
         display_socket(id, ready, id == me, id == members[0].id);
     }
@@ -68,7 +72,8 @@ async function main() {
             $(`first-${id}`).innerText = first_sign(true);
         })
         .on('server:room#enable', (enabled) => {
-            b_start.enabled = enabled;
+            console.log(b_start);
+            b_start.disabled = !enabled;
         })
         .on('server:room#leave', (id) => {
             t_room.removeChild($(`socket-${id}`));
@@ -86,7 +91,7 @@ function display_socket(id, ready = false, is_me = false, first = false) {
     }
     let row = t_room.insertRow();
     row.id = `socket-${id}`;
-    row.innerHTML = html`
+    row.innerHTML = `
         <td>${id}</td>
         <td id="ready-${id}">${ready_sign(ready)}</td>
         <td>${is_me_sign(is_me)}</td>

@@ -22,7 +22,8 @@
     "socket.io-client": "^2.2.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.4.5",
+    "@babel/core": "^7.5.0",
+    "@babel/plugin-proposal-class-properties": "^7.5.0",
     "@babel/plugin-transform-runtime": "^7.4.4",
     "cross-env": "^5.2.0",
     "nodemon": "^1.19.1",

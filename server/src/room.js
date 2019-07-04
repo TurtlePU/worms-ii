@@ -45,11 +45,11 @@ export class Room {
      * @memberof Room
      */
     static can_join(room_id) {
-        return this.lobbies.has(room_id);
+        return Room.lobbies.has(room_id);
     }
 
     static get(room_id) {
-        return this.rooms.get(room_id) || dummy;
+        return Room.rooms.get(room_id) || dummy;
     }
 
     /**
@@ -59,10 +59,10 @@ export class Room {
      * @memberof Room
      */
     static join_id() {
-        if (this.lobbies.size() == 0) {
+        if (Room.lobbies.size == 0) {
             new Room();
         }
-        return this.lobbies.values().next().value;
+        return Room.lobbies.values().next().value;
     }
 
     /**
@@ -105,6 +105,7 @@ export class Room {
     }
 
     get_members() {
+        console.log(this.players);
         return this.players.map(
             ({ id, ready }) => ({ id: beautify(id), ready })
         );

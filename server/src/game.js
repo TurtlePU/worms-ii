@@ -6,7 +6,7 @@ import { Room } from './room';
 
 // player ID is a first socket ID with which a player entered the game
 
-export class Game extends EventEmitter {
+export class Game {
     /**
      * @protected
      * @memberof Game
@@ -75,7 +75,9 @@ export function on_game_events(_io) {
         var game;
         socket
             .on('disconnect', () => {
-                game.delete_player(socket.id);
+                if (game) {
+                    game.delete_player(socket.id);
+                }
             });
     });
 }

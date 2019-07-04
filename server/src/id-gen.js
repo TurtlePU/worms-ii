@@ -97,5 +97,5 @@ export function beautify(socket_id) {
         .split('')
         .map(char => char.charCodeAt(0) % digits.length)
         .reduce((number, digit) => number * digits.length + digit);
-    return toString(number);
+    return to_string(number);
 }
