@@ -4,16 +4,19 @@ import * as Cookie from './js/cookie';
 import { $, fail, request } from './js/util';
 
 /**
+ * Checkbox for state: ready/not ready.
  * @type {HTMLInputElement}
  */
 var inp_ready;
 
 /**
+ * 'Start' button.
  * @type {HTMLButtonElement}
  */
 var b_start;
 
 /**
+ * List of players.
  * @type {HTMLTableSectionElement}
  */
 var t_room;
@@ -85,6 +88,15 @@ async function main() {
         });
 }
 
+/**
+ * Adds new line to the players list.
+ * No side effects.
+ *
+ * @param {string} id id of a player.
+ * @param {boolean} [ready=false] true if player is ready.
+ * @param {boolean} [is_me=false] true if player is this client.
+ * @param {boolean} [first=false] true if player is an admin.
+ */
 function display_socket(id, ready = false, is_me = false, first = false) {
     if ($(`socket-${id}`)) {
         return;
@@ -99,14 +111,35 @@ function display_socket(id, ready = false, is_me = false, first = false) {
     `;
 }
 
+/**
+ * Emoji to show readiness of a player.
+ * Pure.
+ *
+ * @param {boolean} ready true if player is ready.
+ * @returns an emoji.
+ */
 function ready_sign(ready) {
     return ready ? '✔️' : '❌';
 }
 
+/**
+ * Emoji to show _this_ player.
+ * Pure.
+ *
+ * @param {boolean} is_me true if a player is this client.
+ * @returns an emoji or empty string.
+ */
 function is_me_sign(is_me) {
     return is_me ? '⬅️' : '';
 }
 
+/**
+ * Emoji to show an admin.
+ * Pure.
+ *
+ * @param {boolean} first true if a player is an admin.
+ * @returns an emoji or empty string.
+ */
 function first_sign(first) {
     return first ? '🥇' : '';
 }

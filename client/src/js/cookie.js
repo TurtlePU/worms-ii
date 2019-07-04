@@ -1,8 +1,9 @@
 /**
  * Gets a cookie by given name.
+ * Pure.
  * 
  * @export
- * @param {string} name name of the cookie
+ * @param {string} name name of the cookie.
  * @returns cookie by given name.
  */
 export function get(name) {
@@ -14,11 +15,12 @@ export function get(name) {
 
 /**
  * Sets new cookie on given name.
+ * No side effects.
  *
  * @export
- * @param {string} name name of the new cookie
- * @param {string} value
- * @param {{ expires?: number | Date }} [options={}]
+ * @param {string} name name of the new cookie.
+ * @param {string} value cookie itself.
+ * @param {{ expires?: number | Date }} [options={}] options of a cookie. 
  */
 export function set(name, value, options = {}) {
     if (options.expires) {

@@ -2,21 +2,25 @@ import * as Cookie from './js/cookie';
 import { $, request } from './js/util';
 
 /**
+ * Reconnect button.
  * @type {HTMLAnchorElement}
  */
 var a_back;
 
 /**
+ * Join button.
  * @type {HTMLAnchorElement}
  */
 var a_join;
 
 /**
+ * 'Join random' button.
  * @type {HTMLButtonElement}
  */
 var b_rand;
 
 /**
+ * Input of room id.
  * @type {HTMLInputElement}
  */
 var inp_room;
