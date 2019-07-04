@@ -35,7 +35,7 @@ on_game_requests(app);
 on_room_events(io);
 on_game_events(io);
 
-RoomWatcher.on('start', (/** @type {Room} */ room) => {
+RoomWatcher.on('start', (room) => {
     new Game(room);
 });
 

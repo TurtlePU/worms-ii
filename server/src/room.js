@@ -8,11 +8,11 @@ import default_scheme from '../data/schemes/default.json';
 /**
  * Events:
  * 
- * * ```new(room: Room)```
- * * ```delete(room: Room, socket_id: string, socket_index: number)```
- * * ```join(room: Room)```
- * * ```ready(room: Room, socket_index: number)```
- * * ```start(room: Room)```
+ * * `new(room: Room)`
+ * * `delete(room: Room, socket_id: string, socket_index: number)`
+ * * `join(room: Room)`
+ * * `ready(room: Room, socket_index: number)`
+ * * `start(room: Room)`
  */
 export const RoomWatcher = new EventEmitter();
 
@@ -24,38 +24,50 @@ export const RoomWatcher = new EventEmitter();
  */
 export class Room {
     /**
-     * @protected
+     * Rooms which have place for another player.
+     * 
      * @type {Set<string>}
      * @memberof Room
      */
     static lobbies = new Set();
 
     /**
-     * @protected
+     * Collection of all rooms.
+     * 
      * @type {Map<string, Room>}
      * @memberof Room
      */
     static rooms = new Map();
 
     /**
-     * Checks if there is a lobby on given id.
-     *
-     * @public
-     * @param {string} room_id
+     * Checks if player can join the room.
+     * Pure.
+     * 
+     * @param {string} room_id id of some room.
+     * @returns true if there is a room with given id.
      * @memberof Room
      */
     static can_join(room_id) {
         return Room.lobbies.has(room_id);
     }
 
+    /**
+     * Gets room by id.
+     * Pure.
+     * 
+     * @param {string} room_id id of some room.
+     * @returns a room with given id (or dummy, if there's no such room).
+     * @memberof Room
+     */
     static get(room_id) {
         return Room.rooms.get(room_id) || dummy;
     }
 
     /**
-     * Returns id of next room to join.
-     *
-     * @public
+     * Returns id of room which can fit another player.
+     * Creates `new Room` only if necessary.
+     * 
+     * @returns id of room with a place for another player.
      * @memberof Room
      */
     static join_id() {
@@ -67,14 +79,13 @@ export class Room {
 
     /**
      * Creates an instance of Room.
+     * No side effects.
      * 
-     * @public
      * @emits RoomWatcher#new
      * @memberof Room
      */
     constructor() {
         this.id = next_id();
-        this.is_open = false;
         /**
          * @type {{ id: string, ready: boolean }[]}
          */
@@ -84,16 +95,12 @@ export class Room {
         RoomWatcher.emit('new', this);
     }
 
-    close() {
-        this.is_open = false;
-        RoomWatcher.emit('close', this);
-    }
-
     /**
      * Deletes player if present.
+     * No side effects.
      * 
      * @emits RoomWatcher#delete
-     * @param {string} socket_id
+     * @param {string} socket_id id of a player.
      * @memberof Room
      */
     delete_player(socket_id) {
@@ -106,10 +113,25 @@ export class Room {
         RoomWatcher.emit('delete', this, socket_id, i);
     }
 
+    /**
+     * Gets index of a player.
+     * Pure.
+     * 
+     * @param {string} socket_id id of a player.
+     * @returns index of a player in the list of players.
+     * @memberof Room
+     */
     find_index(socket_id) {
         return this.players.findIndex(({ id }) => id == socket_id);
     }
 
+    /**
+     * Gets list of players.
+     * Pure.
+     *  
+     * @returns a formatted list of players in this room.
+     * @memberof Room
+     */
     get_members() {
         console.log(this.players);
         return this.players.map(
@@ -117,6 +139,15 @@ export class Room {
         );
     }
 
+    /**
+     * Adds player to the list if possible.
+     * No side effects.
+     *
+     * @emits RoomWatcher#join
+     * @param {string} socket_id id of a socket.
+     * @returns true if player successfully joined.
+     * @memberof Room
+     */
     join(socket_id) {
         if (this.players.length == this.scheme.player_limit) {
             return false;
@@ -131,11 +162,15 @@ export class Room {
         return true;
     }
 
-    open() {
-        this.is_open = true;
-        RoomWatcher.emit('open', this);
-    }
-
+    /**
+     * Marks that player is ready.
+     * No side effects.
+     *
+     * @emits RoomWatcher#ready
+     * @param {string} socket_id
+     * @param {boolean} ready
+     * @memberof Room
+     */
     set_ready(socket_id, ready) {
         let i = this.find_index(socket_id);
         if (i == -1) {
@@ -146,6 +181,13 @@ export class Room {
         RoomWatcher.emit('ready', this, i);
     }
 
+    /**
+     * Starts the game.
+     * Pure.
+     *
+     * @emits RoomWatcher#start
+     * @memberof Room
+     */
     start() {
         if (!this.players.every(({ ready }) => ready)) {
             return;
@@ -155,6 +197,13 @@ export class Room {
     }
 }
 
+/**
+ * Appends HTTP request listeners (part of Room API).
+ * No side effects.
+ *
+ * @export
+ * @param application an Express application.
+ */
 export function on_room_requests(application) {
     application
         .get('/room=:room_id?', (req, res) => {
@@ -172,20 +221,21 @@ export function on_room_requests(application) {
 }
 
 /**
- * @type {SocketIO.Server}
- * 
  * Emits:
  * 
- * * ```server:room#join(public_id: string)```
- * * ```server:room#ready(public_id: string, ready: boolean)```
- * * ```server:room#first(public_id: string)```
- * * ```server:room#enable(enabled: boolean)```
- * * ```server:room#leave(public_id: string)```
+ * * `server:room#join(public_id: string)`
+ * * `server:room#ready(public_id: string, ready: boolean)`
+ * * `server:room#first(public_id: string)`
+ * * `server:room#enable(enabled: boolean)`
+ * * `server:room#leave(public_id: string)`
+ * 
+ * @type {SocketIO.Server}
  */
 var io;
 
 /**
- *
+ * Appends SocketIO event listeners (part of Room API).
+ * No side effects.
  *
  * @export
  * @param {SocketIO.Server} _io
@@ -196,7 +246,7 @@ export function on_room_events(_io) {
         socket
             .on('client:room#join', (room_id, clb) => {
                 room = Room.get(room_id);
-                if (room.is_open && room.join(socket.id)) {
+                if (room.join(socket.id)) {
                     socket.join(room_id);
                     clb({ me: beautify(socket.id) });
                 } else {
@@ -204,12 +254,10 @@ export function on_room_events(_io) {
                 }
             })
             .on('client:room#ready', (ready) => {
-                if (room.is_open) {
-                    room.set_ready(socket.id, ready);
-                }
+                room.set_ready(socket.id, ready);
             })
             .on('client:room#start', () => {
-                if (room.is_open && room.find_index(socket.id) == 0) {
+                if (room.find_index(socket.id) == 0) {
                     room.start();
                 }
             })
@@ -219,8 +267,10 @@ export function on_room_events(_io) {
     });
 }
 
+/**
+ * @type {Room}
+ */
 const dummy = {
-    is_open: false,
     delete_player: (_) => {},
     find_index: (_) => -1,
     get_members: () => [],
@@ -230,6 +280,9 @@ const dummy = {
 };
 
 /**
+ * Emits `server:room#first` event.
+ * Pure.
+ *
  * @param {Room} room
  */
 function emit_first(room) {
@@ -240,6 +293,9 @@ function emit_first(room) {
 }
 
 /**
+ * Emits `server:room#enable` event.
+ * Pure.
+ *
  * @param {Room} room
  */
 function emit_enable(room) {
@@ -251,7 +307,6 @@ function emit_enable(room) {
 
 RoomWatcher
     .on('new', (room) => {
-        room.open();
         RoomWatcher.emit('free', room.id);
         Room.rooms.set(room.id, room);
     })
@@ -292,7 +347,6 @@ RoomWatcher
     .on('start', (room) => {
         Room.rooms.delete(room.id);
         RoomWatcher.emit('full', room.id);
-        room.close();
     })
     .on('free', (room_id) => {
         Room.lobbies.add(room_id);

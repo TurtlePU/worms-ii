@@ -1,6 +1,8 @@
 const { floor, pow, random } = Math;
 
 /**
+ * Current random permutation.
+ * 
  * @type {IterableIterator<number>}
  */
 var id;
@@ -21,7 +23,7 @@ function* ShuffledGenerator(N) {
 /**
  * Random shuffle on array.
  *
- * @param {*[]} array
+ * @param {[]} array
  * @returns same array, randomly shuffled.
  */
 function shuffle(array) {
@@ -33,19 +35,23 @@ function shuffle(array) {
 }
 
 /**
+ * Digits of beautiful ids.
+ * 
  * @type {string[]}
  */
 var digits;
 
 /**
+ * Length of beautiful ids.
+ * 
  * @type {number}
  */
 var idLength;
 
 /**
- * Casts given number to the base of given digits.
+ * Casts given number to the beautiful base.
  *
- * @param {number} num
+ * @param {number} num a number.
  * @returns string in result of cast.
  */
 function to_string(num) {
@@ -61,8 +67,8 @@ function to_string(num) {
  * Prepares generator of beautiful ids.
  *
  * @export
- * @param {string[]} words
- * @param {number} length
+ * @param {string[]} words digits of beautiful ids.
+ * @param {number} length length of beautiful ids.
  */
 export function init_id_generator(words, length) {
     digits = words;
@@ -88,8 +94,8 @@ export function next_id() {
  * Casts several first chars of given id to the beatiful id.
  *
  * @export
- * @param {string} socket_id
- * @returns casted chars
+ * @param {string} socket_id given id.
+ * @returns casted chars.
  */
 export function beautify(socket_id) {
     let number = socket_id

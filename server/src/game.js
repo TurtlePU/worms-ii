@@ -1,14 +1,18 @@
-import { EventEmitter } from 'events';
-
 import { pages } from './pages';
-import { Player } from './player';
 import { Room } from './room';
 
 // player ID is a first socket ID with which a player entered the game
 
+/**
+ * Represents game itself.
+ *
+ * @export
+ * @class Game
+ */
 export class Game {
     /**
-     * @protected
+     * Collection of live games.
+     * 
      * @memberof Game
      * @type {Map<string, Game>}
      */
@@ -27,7 +31,8 @@ export class Game {
     }
 
     /**
-     *Creates an instance of Game.
+     * Creates an instance of Game.
+     *
      * @param {Room} room
      * @memberof Game
      */
@@ -37,15 +42,33 @@ export class Game {
         // Don't forget to emit server:game#start
     }
 
+    /**
+     * Checks if game has player with given id.
+     *
+     * @param {string} socket_id id with which a player started the game.
+     * @memberof Game
+     */
     has(socket_id) {
         return this.players.has(socket_id);
     }
 
+    /**
+     * Hides player with given id from players queue.
+     *
+     * @param {string} socket_id last known id of a player.
+     * @memberof Game
+     */
     delete_player(socket_id) {
         // TODO
     }
 }
 
+/**
+ * Appends HTTP request listeners (part of Game API).
+ *
+ * @export
+ * @param app an Express app.
+ */
 export function on_game_requests(app) {    
     app.get('/game=:game_id?/socket=:socket_id?', (req, res) => {
         res.sendFile(pages.get(
@@ -61,7 +84,7 @@ export function on_game_requests(app) {
 var io;
 
 /**
- *
+ * Appends SocketIO event listeners (part of Game API).
  *
  * @export
  * @param {SocketIO.Server} _io
