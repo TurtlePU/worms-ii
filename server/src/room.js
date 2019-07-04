@@ -74,6 +74,7 @@ export class Room {
      */
     constructor() {
         this.id = next_id();
+        this.is_open = false;
         /**
          * @type {{ id: string, ready: boolean }[]}
          */
@@ -81,6 +82,11 @@ export class Room {
         this.scheme = default_scheme;
 
         RoomWatcher.emit('new', this);
+    }
+
+    close() {
+        this.is_open = false;
+        RoomWatcher.emit('close', this);
     }
 
     /**
@@ -123,6 +129,11 @@ export class Room {
         RoomWatcher.emit('join', this);
 
         return true;
+    }
+
+    open() {
+        this.is_open = true;
+        RoomWatcher.emit('open', this);
     }
 
     set_ready(socket_id, ready) {
@@ -185,21 +196,20 @@ export function on_room_events(_io) {
         socket
             .on('client:room#join', (room_id, clb) => {
                 room = Room.get(room_id);
-                if (room.join(socket.id)) {
+                if (room.is_open && room.join(socket.id)) {
                     socket.join(room_id);
                     clb({ me: beautify(socket.id) });
                 } else {
                     clb({ error: `Failed to join room ${room_id}.` });
                 }
             })
-            .on('client:room#leave', () => {
-                room.delete_player(socket.id);
-            })
             .on('client:room#ready', (ready) => {
-                room.set_ready(socket.id, ready);
+                if (room.is_open) {
+                    room.set_ready(socket.id, ready);
+                }
             })
             .on('client:room#start', () => {
-                if (room.find_index(socket.id) == 0) {
+                if (room.is_open && room.find_index(socket.id) == 0) {
                     room.start();
                 }
             })
@@ -210,6 +220,7 @@ export function on_room_events(_io) {
 }
 
 const dummy = {
+    is_open: false,
     delete_player: (_) => {},
     find_index: (_) => -1,
     get_members: () => [],
@@ -240,8 +251,9 @@ function emit_enable(room) {
 
 RoomWatcher
     .on('new', (room) => {
-        Room.rooms.set(room.id, room);
+        room.open();
         RoomWatcher.emit('free', room.id);
+        Room.rooms.set(room.id, room);
     })
     .on('delete', (/** @type {Room} */ room, socket_id, socket_index) => {
         io.to(room.id).emit(
@@ -280,6 +292,7 @@ RoomWatcher
     .on('start', (room) => {
         Room.rooms.delete(room.id);
         RoomWatcher.emit('full', room.id);
+        room.close();
     })
     .on('free', (room_id) => {
         Room.lobbies.add(room_id);
