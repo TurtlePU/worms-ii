@@ -1,9 +1,5 @@
-import { $ } from './js/util';
-
-/**
- * @type {HTMLAnchorElement}
- */
-var a_back;
+import * as Cookie from './js/cookie';
+import { $, fail, request } from './js/util';
 
 /**
  * @type {HTMLInputElement}
@@ -28,48 +24,63 @@ var socket;
 /**
  * @type {string}
  */
-var public_id;
-
-/**
- * @type {string}
- */
 var room_id;
 
 async function main() {
-    a_back = $('a-back');
     inp_ready = $('inp-ready');
     b_start = $('b-start');
     t_room = $('t-room');
 
-    a_back.addEventListener('click', () => {
-        socket.emit('client:room#leave');
-    });
-
     inp_ready.addEventListener('click', () => {
-        socket.emit('client:room#ready');
+        socket.emit('client:room#ready', inp_ready.enabled);
     });
 
     b_start.addEventListener('click', () => {
         socket.emit('client:room#start');
     });
 
-    public_id = await (await fetch('/room.get_me')).text();
-
     room_id = document.location.pathname.match(/\/room\/(.*)/)[1];
 
     socket = io();
 
-    socket.on('server:room#join', id => display_socket(id))
-          .on('server:room#ready', id => swap($(`ready-${id}`)))
-          .on('server:room#first', id => $(`first-${id}`).innerText = first_sign(true))
-          .on('server:room#enable', enabled => b_start.enabled = enabled)
-          .on('server:room#leave', id => t_room.removeChild($(`socket-${id}`)))
-          .on('server:room#start', () => window.location.href = `game/${room_id}`);
+    let join_result = await new Promise((resolve, reject) => {
+        socket.emit('client:room#join', room_id, resolve);
+        setTimeout(reject, 10000);
+    });
+    if (join_result.error) {
+        return fail(join_result.error);
+    }
+    let me = join_result.me;
 
-    socket.emit('client:room#join', room_id);
+    let members = await request(`/.room.get_members/id=${room_id}`, 'json');
+    for (let { id, ready } of members) {
+        display_socket(id, ready, id == me, id == members[0].id);
+    }
+
+    socket
+        .on('server:room#join', (id) => {
+            display_socket(id);
+        })
+        .on('server:room#ready', (id, ready) => {
+            $(`ready-${id}`).innerText = ready_sign(ready);
+        })
+        .on('server:room#first', (id) => {
+            $(`first-${id}`).innerText = first_sign(true);
+        })
+        .on('server:room#enable', (enabled) => {
+            b_start.enabled = enabled;
+        })
+        .on('server:room#leave', (id) => {
+            t_room.removeChild($(`socket-${id}`));
+        })
+        .on('server:game#start', () => {
+            Cookie.set('id', socket.id);
+            Cookie.set('room', room_id);
+            window.location.href = `game/${room_id}`;
+        });
 }
 
-function display_socket(id, ready = false, first = false) {
+function display_socket(id, ready = false, is_me = false, first = false) {
     if ($(`socket-${id}`)) {
         return;
     }
@@ -78,26 +89,17 @@ function display_socket(id, ready = false, first = false) {
     row.innerHTML = html`
         <td>${id}</td>
         <td id="ready-${id}">${ready_sign(ready)}</td>
-        <td>${is_me_sign(id)}</td>
+        <td>${is_me_sign(is_me)}</td>
         <td id="first-${id}">${first_sign(first)}</td>
     `;
 }
 
-function is_me_sign(id) {
-    return id == public_id ? '⬅️' : '';
-}
-
-const not_ready = '❌';
-
 function ready_sign(ready) {
-    return ready ? '✔️' : not_ready;
+    return ready ? '✔️' : '❌';
 }
 
-/**
- * @param {HTMLTableCellElement} sign
- */
-function swap(sign) {
-    sign.innerText = ready_sign(sign.innerText == not_ready);
+function is_me_sign(is_me) {
+    return is_me ? '⬅️' : '';
 }
 
 function first_sign(first) {

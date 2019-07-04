@@ -1,5 +1,5 @@
 import * as Cookie from './js/cookie';
-import { $ } from './js/util';
+import { $, request } from './js/util';
 
 /**
  * @type {HTMLAnchorElement}
@@ -34,7 +34,7 @@ function main() {
     });
 
     b_rand.addEventListener('click', async () => {
-        inp_room.value = await (await fetch('/.room_id')).text();
+        inp_room.value = await request('/.room.join_id', 'text');
         a_join.click();
     });
 
