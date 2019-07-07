@@ -39,6 +39,10 @@ export class Room {
      */
     static rooms = new Map();
 
+    scheme: { "player_limit": number; };
+    players: any[];
+    id: string;
+
     /**
      * Checks if player can join the room.
      * Pure.
@@ -86,9 +90,6 @@ export class Room {
      */
     constructor() {
         this.id = next_id();
-        /**
-         * @type {{ id: string, ready: boolean }[]}
-         */
         this.players = [];
         this.scheme = default_scheme;
 

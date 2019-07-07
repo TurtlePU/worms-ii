@@ -3,11 +3,11 @@
   "version": "0.0.0",
   "description": "Worms II in browser. Again",
   "scripts": {
-    "build-server": "rimraf server/build && parcel build server/src/server.js -t node -d server/build --no-source-maps",
+    "build-server": "rimraf server/build && parcel build server/src/server.ts -t node -d server/build --no-source-maps",
     "build-client": "rimraf client/build && parcel build client/src/*.html -d client/build --no-source-maps",
     "build": "npm run build-server && npm run build-client",
     "start": "node server/build/server.js",
-    "watch-server": "rimraf server/dist && parcel server/src/server.js -t node -d server/dist",
+    "watch-server": "rimraf server/dist && parcel server/src/server.ts -t node -d server/dist",
     "watch-client": "rimraf client/dist && parcel watch client/src/*.html -d client/dist",
     "dev-server": "cross-env DEV_SERVER=true nodemon server/dist/server.js"
   },
@@ -23,11 +23,14 @@
   },
   "devDependencies": {
     "@babel/core": "^7.5.0",
-    "@babel/plugin-proposal-class-properties": "^7.5.0",
     "@babel/plugin-transform-runtime": "^7.4.4",
+    "@types/express": "^4.17.0",
+    "@types/node": "^12.0.12",
+    "@types/socket.io": "^2.1.2",
     "cross-env": "^5.2.0",
     "nodemon": "^1.19.1",
     "parcel-bundler": "^1.12.3",
-    "rimraf": "^2.6.3"
+    "rimraf": "^2.6.3",
+    "typescript": "^3.5.2"
   }
 }

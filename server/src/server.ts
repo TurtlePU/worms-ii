@@ -5,7 +5,7 @@ import path    from 'path';
 import socket  from 'socket.io';
 
 import { init_id_generator } from './id-gen';
-import { setup_pages } from './pages';
+import { setup_pages, pages } from './pages';
 import { RoomWatcher, on_room_events, on_room_requests, Room } from './room';
 import { on_game_events, on_game_requests, Game } from './game';
 
@@ -35,7 +35,7 @@ on_game_requests(app);
 on_room_events(io);
 on_game_events(io);
 
-RoomWatcher.on('start', (room) => {
+RoomWatcher.on('start', (room: Room) => {
     new Game(room);
 });
 

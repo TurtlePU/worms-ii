@@ -1,0 +1,7 @@
+{
+    "compilerOptions": {
+        "allowSyntheticDefaultImports": true,
+        "downlevelIteration": true,
+        "resolveJsonModule": true
+    }
+}
