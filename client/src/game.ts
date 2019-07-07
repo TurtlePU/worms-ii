@@ -2,10 +2,7 @@ import io from 'socket.io-client';
 
 import * as Cookie from './js/cookie';
 
-/**
- * @type {SocketIOClient.Socket}
- */
-var socket;
+var socket: SocketIOClient.Socket;
 
 async function main() {
     socket = io();
@@ -18,6 +15,8 @@ async function main() {
         );
         setTimeout(reject, 3000);
     });
+
+    // TODO: game logic
 }
 
 main();

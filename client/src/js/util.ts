@@ -1,22 +1,18 @@
 /**
  * Shortcut for `document.getElementById`.
  * Pure.
- * 
- * @export
- * @param {string} id id of an element
+ * @param id id of an element
  */
-export function $ (id) {
+export function $ (id: string) {
     return document.getElementById(id);
 }
 
 /**
  * Shows error message & redirects to index.
  * Pure.
- *
- * @export
- * @param {string} msg message to show.
+ * @param msg message to show.
  */
-export function fail(msg) {
+export function fail(msg: string) {
     alert(msg);
     window.location.href = '/';
 }
@@ -24,13 +20,11 @@ export function fail(msg) {
 /**
  * Small wrapper above fetch().
  * Pure.
- *
- * @export
- * @param {string} href address of a request.
- * @param {'blob' | 'buffer' | 'json' | 'text'} type type of a response.
+ * @param href address of a request.
+ * @param type type of a response.
  * @returns response of given type.
  */
-export async function request(href, type) {
+export async function request(href: string, type: 'blob' | 'buffer' | 'json' | 'text') {
     let res = await fetch(href);
     switch (type) {
         case 'text':

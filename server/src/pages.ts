@@ -7,6 +7,7 @@ export var pages: Map<string, string>;
 
 /**
  * Prepares `pages`.
+ * Has no side effects.
  * @see {@link pages}
  * @param client_dir A directory where all HTMLs are stored.
  */

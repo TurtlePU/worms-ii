@@ -1,12 +1,10 @@
 /**
  * Gets a cookie by given name.
  * Pure.
- * 
- * @export
- * @param {string} name name of the cookie.
+ * @param name name of the cookie.
  * @returns cookie by given name.
  */
-export function get(name) {
+export function get(name: string) {
     var matches = document.cookie.match(new RegExp(
         "(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"
     ));
@@ -16,13 +14,11 @@ export function get(name) {
 /**
  * Sets new cookie on given name.
  * No side effects.
- *
- * @export
- * @param {string} name name of the new cookie.
- * @param {string} value cookie itself.
- * @param {{ expires?: number | Date }} [options={}] options of a cookie. 
+ * @param name name of the new cookie.
+ * @param value cookie itself.
+ * @param options options of a cookie. 
  */
-export function set(name, value, options = {}) {
+export function set(name: string, value: string, options: { expires?: number | Date | string } = {}) {
     if (options.expires) {
         if (typeof options.expires == 'number') {
             let d = new Date();

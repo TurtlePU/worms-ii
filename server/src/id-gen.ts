@@ -7,6 +7,7 @@ var id: IterableIterator<number>;
 
 /**
  * Generator of random permutation (1 .. N).
+ * Pure.
  * @param N
  */
 function* ShuffledGenerator(N: number) {
@@ -19,6 +20,7 @@ function* ShuffledGenerator(N: number) {
 
 /**
  * Random shuffle on array.
+ * Pure (except for `Math.random()`).
  * @param array
  * @returns same array, randomly shuffled.
  */
@@ -42,6 +44,7 @@ var idLength: number;
 
 /**
  * Casts given number to the beautiful base.
+ * Pure.
  * @param num a number.
  * @returns string in result of cast.
  */
@@ -56,6 +59,7 @@ function to_string(num: number) {
 
 /**
  * Prepares generator of beautiful ids.
+ * Has no side effects.
  * @param words digits of beautiful ids.
  * @param length length of beautiful ids.
  */
@@ -68,6 +72,7 @@ export function init_id_generator(words: string[], length: number) {
 
 /**
  * Returns a new beautiful id.
+ * Only shifts an iterator on permutation.
  */
 export function next_id() {
     let nxt = id.next();
@@ -79,6 +84,7 @@ export function next_id() {
 
 /**
  * Casts several first chars of given id to the beatiful id.
+ * Pure.
  * @param socket_id given id.
  * @returns casted chars.
  */

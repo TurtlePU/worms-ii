@@ -3,38 +3,23 @@ import io from 'socket.io-client';
 import * as Cookie from './js/cookie';
 import { $, fail, request } from './js/util';
 
-/**
- * Checkbox for state: ready/not ready.
- * @type {HTMLInputElement}
- */
-var inp_ready;
+/** Checkbox for state: ready/not ready. */
+var inp_ready: HTMLInputElement;
 
-/**
- * 'Start' button.
- * @type {HTMLButtonElement}
- */
-var b_start;
+/** 'Start' button. */
+var b_start: HTMLButtonElement;
 
-/**
- * List of players.
- * @type {HTMLTableSectionElement}
- */
-var t_room;
+/** List of players. */
+var t_room: HTMLTableSectionElement;
 
-/**
- * @type {SocketIOClient.Socket}
- */
-var socket;
+var socket: SocketIOClient.Socket;
 
-/**
- * @type {string}
- */
-var room_id;
+var room_id: string;
 
 async function main() {
-    inp_ready = $('inp-ready');
-    b_start = $('b-start');
-    t_room = $('t-room');
+    inp_ready = <HTMLInputElement> $('inp-ready');
+    b_start = <HTMLButtonElement> $('b-start');
+    t_room = <HTMLTableSectionElement> $('t-room');
 
     inp_ready.addEventListener('click', () => {
         console.log(inp_ready.checked);
@@ -52,8 +37,8 @@ async function main() {
     let join_result = await new Promise((resolve, reject) => {
         socket.emit('client:room#join', room_id, resolve);
         setTimeout(reject, 10000);
-    });
-    if (join_result.error) {
+    }) as ErrType | { me: string };
+    if (isError(join_result)) {
         return fail(join_result.error);
     }
     let me = join_result.me;
@@ -65,20 +50,20 @@ async function main() {
     }
 
     socket
-        .on('server:room#join', (id) => {
+        .on('server:room#join', (id: string) => {
             display_socket(id);
         })
-        .on('server:room#ready', (id, ready) => {
+        .on('server:room#ready', (id: string, ready: boolean) => {
             $(`ready-${id}`).innerText = ready_sign(ready);
         })
-        .on('server:room#first', (id) => {
+        .on('server:room#first', (id: string) => {
             $(`first-${id}`).innerText = first_sign(true);
         })
-        .on('server:room#enable', (enabled) => {
+        .on('server:room#enable', (enabled: boolean) => {
             console.log(b_start);
             b_start.disabled = !enabled;
         })
-        .on('server:room#leave', (id) => {
+        .on('server:room#leave', (id: string) => {
             t_room.removeChild($(`socket-${id}`));
         })
         .on('server:game#start', () => {
@@ -91,13 +76,12 @@ async function main() {
 /**
  * Adds new line to the players list.
  * No side effects.
- *
- * @param {string} id id of a player.
- * @param {boolean} [ready=false] true if player is ready.
- * @param {boolean} [is_me=false] true if player is this client.
- * @param {boolean} [first=false] true if player is an admin.
+ * @param id id of a player.
+ * @param true if player is ready.
+ * @param true if player is this client.
+ * @param true if player is an admin.
  */
-function display_socket(id, ready = false, is_me = false, first = false) {
+function display_socket(id: string, ready?: boolean, is_me?: boolean, first?: boolean) {
     if ($(`socket-${id}`)) {
         return;
     }
@@ -114,34 +98,41 @@ function display_socket(id, ready = false, is_me = false, first = false) {
 /**
  * Emoji to show readiness of a player.
  * Pure.
- *
- * @param {boolean} ready true if player is ready.
+ * @param ready true if player is ready.
  * @returns an emoji.
  */
-function ready_sign(ready) {
+function ready_sign(ready: boolean) {
     return ready ? '✔️' : '❌';
 }
 
 /**
  * Emoji to show _this_ player.
  * Pure.
- *
- * @param {boolean} is_me true if a player is this client.
+ * @param is_me true if a player is this client.
  * @returns an emoji or empty string.
  */
-function is_me_sign(is_me) {
+function is_me_sign(is_me: boolean) {
     return is_me ? '⬅️' : '';
 }
 
 /**
  * Emoji to show an admin.
  * Pure.
- *
- * @param {boolean} first true if a player is an admin.
+ * @param first true if a player is an admin.
  * @returns an emoji or empty string.
  */
-function first_sign(first) {
+function first_sign(first: boolean) {
     return first ? '🥇' : '';
 }
 
+/**
+ * Tests the type of server response.
+ * @returns true if response is an error.
+ */
+function isError(res: ErrType | { me: string }): res is ErrType {
+    return (res as ErrType).error !== undefined;
+}
+
 main();
+
+type ErrType = { error: string };

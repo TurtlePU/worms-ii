@@ -1,35 +1,23 @@
 import * as Cookie from './js/cookie';
 import { $, request } from './js/util';
 
-/**
- * Reconnect button.
- * @type {HTMLAnchorElement}
- */
-var a_back;
+/** Reconnect button. */
+var a_back: HTMLAnchorElement;
 
-/**
- * Join button.
- * @type {HTMLAnchorElement}
- */
-var a_join;
+/** Join button. */
+var a_join: HTMLAnchorElement;
 
-/**
- * 'Join random' button.
- * @type {HTMLButtonElement}
- */
-var b_rand;
+/** 'Join random' button. */
+var b_rand: HTMLButtonElement;
 
-/**
- * Input of room id.
- * @type {HTMLInputElement}
- */
-var inp_room;
+/** Input of room id. */
+var inp_room: HTMLInputElement;
 
 function main() {
-    a_back = $('a-back');
-    a_join = $('a-join');
-    b_rand = $('b-rand');
-    inp_room = $('inp-room');
+    a_back = <HTMLAnchorElement> $('a-back');
+    a_join = <HTMLAnchorElement> $('a-join');
+    b_rand = <HTMLButtonElement> $('b-rand');
+    inp_room = <HTMLInputElement> $('inp-room');
 
     a_back.href += Cookie.get('room');
 

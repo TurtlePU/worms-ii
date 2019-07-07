@@ -8,9 +8,22 @@ import { Player } from './player';
 
 // player ID is a first socket ID with which a player entered the game
 
+/**
+ * Events:
+ * * `new(game: Game)`
+ */
 export const GameWatcher = new EventEmitter();
 
+/**
+ * Interface of a `Game`.
+ */
 export interface IGame {
+    /**
+     * Checks if game has player with given id.
+     * Must be pure.
+     * @param socket_id id with which a player started the game.
+     * @returns true if player with given id started this game.
+     */
     has(socket_id: string): boolean;
 }
 
@@ -29,6 +42,7 @@ export class Game implements IGame {
 
     /**
      * Returns `Game` by given id.
+     * Pure.
      * @param game_id id of a game.
      * @returns `Game` by given id.
      */
@@ -50,6 +64,7 @@ export class Game implements IGame {
 
     /**
      * Hides player with given id from players queue.
+     * No side effects.
      * @param socket_id last known id of a player.
      */
     delete_player(socket_id: string) {
@@ -58,6 +73,7 @@ export class Game implements IGame {
 
     /**
      * Returns index of a player with given id.
+     * Pure.
      * @param socket_id id with which a player started the game.
      * @returns index of a player with given id.
      */
@@ -65,11 +81,6 @@ export class Game implements IGame {
         return this.players.findIndex(({ first_id }) => first_id == socket_id);
     }
 
-    /**
-     * Checks if game has player with given id.
-     * @param socket_id id with which a player started the game.
-     * @returns true if player with given id started this game.
-     */
     has(socket_id: string) {
         return this.find_index(socket_id) != -1;
     }
@@ -77,6 +88,7 @@ export class Game implements IGame {
 
 /**
  * Appends HTTP request listeners (part of Game API).
+ * No side effects.
  * @param app an Express app.
  */
 export function on_game_requests(app: express.Application) {
@@ -88,10 +100,15 @@ export function on_game_requests(app: express.Application) {
     });
 }
 
+/**
+ * Emits:
+ * * `server:game#start()`
+ */
 var io: SocketIO.Server;
 
 /**
  * Appends SocketIO event listeners (part of Game API).
+ * No side effects.
  * @param _io Socket.IO Server.
  */
 export function on_game_events(_io: SocketIO.Server) {
