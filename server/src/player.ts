@@ -39,7 +39,7 @@ export class Player {
  * Indices of weapons.
  */
 export enum Weapon {
-    //
+    // TODO: weapons list
 }
 
 /**
@@ -60,7 +60,7 @@ export interface Point {
 }
 
 /**
- * Data of Weapon unique for User.
+ * Data of Weapon (unique for User).
  */
 export interface Ammo {
     amount: number;
