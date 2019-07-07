@@ -1,30 +1,68 @@
 
 /**
  * Represents a player during the game.
- *
- * @export
- * @class Player
  */
 export class Player {
-    old_id: string;
-    new_id: string;
-    worms: any[];
-    weapons: Map<any, any>;
+    /**
+     * Id on first connection.
+     */
+    readonly first_id: string;
+
+    /**
+     * Id on last connection.
+     */
+    last_id: string;
+
+    /**
+     * List of all worms.
+     */
+    worms: Worm[];
+
+    /**
+     * List of weapons' ammo (indexable via `Weapon` enum).
+     */
+    weapons: Ammo[];
+
     /**
      * Creates an instance of Player.
-     * @param {string} id
-     * @memberof Player
+     * @param id first connection id.
      */
     constructor(id: string) {
-        this.old_id = id;
-        this.new_id = id;
-        /**
-         * @type {{ hp: number, name: string, position: { x: number, y: number } }[]}
-         */
+        this.first_id = id;
+        this.last_id = id;
         this.worms = [];
-        /**
-         * @type {Map<string, { amount: number, delay: number }>}
-         */
-        this.weapons = new Map();
+        this.weapons = [];
     }
+}
+
+/**
+ * Indices of weapons.
+ */
+export enum Weapon {
+    //
+}
+
+/**
+ * Worm data.
+ */
+export interface Worm {
+    hp: number;
+    name: string;
+    position: Point;
+}
+
+/**
+ * 2D point data.
+ */
+export interface Point {
+    x: number;
+    y: number;
+}
+
+/**
+ * Data of Weapon unique for User.
+ */
+export interface Ammo {
+    amount: number;
+    delay: number;
 }

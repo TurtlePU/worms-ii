@@ -2,17 +2,14 @@ const { floor, pow, random } = Math;
 
 /**
  * Current random permutation.
- * 
- * @type {IterableIterator<number>}
  */
-var id;
+var id: IterableIterator<number>;
 
 /**
  * Generator of random permutation (1 .. N).
- *
- * @param {number} N
+ * @param N
  */
-function* ShuffledGenerator(N) {
+function* ShuffledGenerator(N: number) {
     let index = 0;
     let order = shuffle([...new Array(N).keys()]);
     while (index < order.length) {
@@ -22,11 +19,10 @@ function* ShuffledGenerator(N) {
 
 /**
  * Random shuffle on array.
- *
- * @param {[]} array
+ * @param array
  * @returns same array, randomly shuffled.
  */
-function shuffle(array) {
+function shuffle(array: any[]) {
     for (let i = array.length - 1; i != 0; --i) {
         let j = floor(random() * (i + 1));
         [ array[i], array[j] ] = [ array[j], array[i] ];
@@ -36,25 +32,20 @@ function shuffle(array) {
 
 /**
  * Digits of beautiful ids.
- * 
- * @type {string[]}
  */
-var digits;
+var digits: string[];
 
 /**
  * Length of beautiful ids.
- * 
- * @type {number}
  */
-var idLength;
+var idLength: number;
 
 /**
  * Casts given number to the beautiful base.
- *
- * @param {number} num a number.
+ * @param num a number.
  * @returns string in result of cast.
  */
-function to_string(num) {
+function to_string(num: number) {
     let ans = '', n = digits.length;
     for (let i = 0; i != idLength; ++i) {
         ans += `-${digits[num % n]}`;
@@ -65,12 +56,10 @@ function to_string(num) {
 
 /**
  * Prepares generator of beautiful ids.
- *
- * @export
- * @param {string[]} words digits of beautiful ids.
- * @param {number} length length of beautiful ids.
+ * @param words digits of beautiful ids.
+ * @param length length of beautiful ids.
  */
-export function init_id_generator(words, length) {
+export function init_id_generator(words: string[], length: number) {
     digits = words;
     idLength = length;
     const N = pow(digits.length, length);
@@ -79,8 +68,6 @@ export function init_id_generator(words, length) {
 
 /**
  * Returns a new beautiful id.
- *
- * @export
  */
 export function next_id() {
     let nxt = id.next();
@@ -92,12 +79,10 @@ export function next_id() {
 
 /**
  * Casts several first chars of given id to the beatiful id.
- *
- * @export
- * @param {string} socket_id given id.
+ * @param socket_id given id.
  * @returns casted chars.
  */
-export function beautify(socket_id) {
+export function beautify(socket_id: string) {
     let number = socket_id
         .substr(0, idLength)
         .split('')

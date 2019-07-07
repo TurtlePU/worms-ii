@@ -1,4 +1,6 @@
 import { EventEmitter } from 'events';
+import * as express     from 'express';
+import SocketIO         from 'socket.io';
 
 import { pages } from './pages';
 import { Room } from './room';
@@ -8,20 +10,18 @@ import { Player } from './player';
 
 export const GameWatcher = new EventEmitter();
 
+export interface IGame {
+    has(socket_id: string): boolean;
+}
+
 /**
  * Represents game itself.
- *
- * @export
- * @class Game
  */
-export class Game {
+export class Game implements IGame {
     /**
      * Collection of live games.
-     * 
-     * @memberof Game
-     * @type {Map<string, Game>}
      */
-    static games = new Map();
+    static games = new Map<string, Game>();
 
     id: string;
     scheme: any;
@@ -29,57 +29,57 @@ export class Game {
 
     /**
      * Returns `Game` by given id.
-     *
-     * @param {string} game_id id of a game.
+     * @param game_id id of a game.
      * @returns `Game` by given id.
-     * @memberof Game
      */
-    static get(game_id) {
+    static get(game_id: string) {
         return this.games.get(game_id) || dummy;
     }
 
     /**
      * Creates an instance of Game.
-     *
-     * @param {Room} room
-     * @memberof Game
+     * @param room Room which started a game.
      */
-    constructor(room) {
+    constructor(room: Room) {
         this.id = room.id;
         this.scheme = room.scheme;
         this.players = room.players.map(({ id }) => new Player(id));
+
         GameWatcher.emit('new', this);
     }
 
     /**
-     * Checks if game has player with given id.
-     *
-     * @param {string} socket_id id with which a player started the game.
-     * @memberof Game
+     * Hides player with given id from players queue.
+     * @param socket_id last known id of a player.
      */
-    has(socket_id) {
-        return false;
-        // return this.find_index(socket_id) != -1;
+    delete_player(socket_id: string) {
+        // TODO: delete_player [Game]
     }
 
     /**
-     * Hides player with given id from players queue.
-     *
-     * @param {string} socket_id last known id of a player.
-     * @memberof Game
+     * Returns index of a player with given id.
+     * @param socket_id id with which a player started the game.
+     * @returns index of a player with given id.
      */
-    delete_player(socket_id) {
-        // TODO
+    find_index(socket_id: string) {
+        return this.players.findIndex(({ first_id }) => first_id == socket_id);
+    }
+
+    /**
+     * Checks if game has player with given id.
+     * @param socket_id id with which a player started the game.
+     * @returns true if player with given id started this game.
+     */
+    has(socket_id: string) {
+        return this.find_index(socket_id) != -1;
     }
 }
 
 /**
  * Appends HTTP request listeners (part of Game API).
- *
- * @export
  * @param app an Express app.
  */
-export function on_game_requests(app) {    
+export function on_game_requests(app: express.Application) {
     app.get('/game=:game_id?/socket=:socket_id?', (req, res) => {
         res.sendFile(pages.get(
             Game.get(req.params.game_id).has(req.params.socket_id)
@@ -88,24 +88,16 @@ export function on_game_requests(app) {
     });
 }
 
-/**
- * @type {SocketIO.Server}
- */
-var io;
+var io: SocketIO.Server;
 
 /**
  * Appends SocketIO event listeners (part of Game API).
- *
- * @export
- * @param {SocketIO.Server} _io
+ * @param _io Socket.IO Server.
  */
-export function on_game_events(_io) {
+export function on_game_events(_io: SocketIO.Server) {
     (io = _io).on('connection', (socket) => {
-        // TODO
-        /**
-         * @type {Game}
-         */
-        var game;
+        // TODO: game events
+        var game: Game;
         socket
             .on('disconnect', () => {
                 if (game) {
@@ -115,17 +107,12 @@ export function on_game_events(_io) {
     });
 }
 
-/**
- * @type {Game}
- */
-const dummy = {
-    //
+const dummy: IGame = {
+    has: (_) => false,
 };
 
-// Don't forget to emit server:game#start
-
 GameWatcher
-    .on('new', (game) => {
+    .on('new', (game: Game) => {
         Game.games.set(game.id, game);
-        //
+        // FIXME: emit game start (server:game#start)
     });
