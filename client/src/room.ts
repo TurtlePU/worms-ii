@@ -38,13 +38,13 @@ async function main() {
         socket.emit('client:room#join', room_id, resolve);
         setTimeout(reject, 10000);
     }) as ErrType | { me: string };
-    if (isError(join_result)) {
+
+    if (is_error(join_result)) {
         return fail(join_result.error);
     }
     let me = join_result.me;
 
     let members = await request(`/.room.get_members/id=${room_id}`, 'json');
-    console.log(members);
     for (let { id, ready } of members) {
         display_socket(id, ready, id == me, id == members[0].id);
     }
@@ -73,14 +73,6 @@ async function main() {
         });
 }
 
-/**
- * Adds new line to the players list.
- * No side effects.
- * @param id id of a player.
- * @param true if player is ready.
- * @param true if player is this client.
- * @param true if player is an admin.
- */
 function display_socket(id: string, ready?: boolean, is_me?: boolean, first?: boolean) {
     if ($(`socket-${id}`)) {
         return;
@@ -95,41 +87,19 @@ function display_socket(id: string, ready?: boolean, is_me?: boolean, first?: bo
     `;
 }
 
-/**
- * Emoji to show readiness of a player.
- * Pure.
- * @param ready true if player is ready.
- * @returns an emoji.
- */
 function ready_sign(ready: boolean) {
     return ready ? '✔️' : '❌';
 }
 
-/**
- * Emoji to show _this_ player.
- * Pure.
- * @param is_me true if a player is this client.
- * @returns an emoji or empty string.
- */
 function is_me_sign(is_me: boolean) {
     return is_me ? '⬅️' : '';
 }
 
-/**
- * Emoji to show an admin.
- * Pure.
- * @param first true if a player is an admin.
- * @returns an emoji or empty string.
- */
 function first_sign(first: boolean) {
     return first ? '🥇' : '';
 }
 
-/**
- * Tests the type of server response.
- * @returns true if response is an error.
- */
-function isError(res: ErrType | { me: string }): res is ErrType {
+function is_error(res: ErrType | { me: string }): res is ErrType {
     return (res as ErrType).error !== undefined;
 }
 
