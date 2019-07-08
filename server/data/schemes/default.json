@@ -1,3 +1,6 @@
 {
-    "player_limit": 4
+    "player_limit": 4,
+    "player_scheme": {
+        "worm_limit": 4
+    }
 }

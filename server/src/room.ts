@@ -3,7 +3,7 @@ import * as express from 'express';
 import SocketIO from 'socket.io';
 
 import { next_id, beautify } from './id-gen';
-import { Scheme } from './ifc-scheme';
+import { Scheme } from './scheme';
 import { pages } from './pages';
 
 import default_scheme from '../data/schemes/default.json';
@@ -126,26 +126,12 @@ export class Room implements IRoom {
     /**
      * States of players in the room.
      */
-    protected _players: PlayerState[];
+    public players: PlayerState[];
 
     /**
      * Scheme used for following game.
      */
-    protected _scheme: Scheme;
-
-    /**
-     * Getter of states of players in the room.
-     */
-    public get players() {
-        return [ ...this._players ];
-    }
-
-    /**
-     * Getter of scheme used for following game.
-     */
-    public get scheme() {
-        return { ...this._scheme };
-    }
+    protected scheme: Scheme;
 
     /**
      * Creates an instance of Room.
@@ -154,8 +140,8 @@ export class Room implements IRoom {
      */
     protected constructor() {
         this.id = next_id();
-        this._players = [];
-        this._scheme = default_scheme;
+        this.players = [];
+        this.scheme = default_scheme;
 
         RoomWatcher.emit('new', this);
     }
@@ -165,30 +151,37 @@ export class Room implements IRoom {
         if (i == -1) {
             return;
         }
-        this._players.splice(i, 1);
+        this.players.splice(i, 1);
 
         RoomWatcher.emit('delete', this, socket_id, i);
     }
 
     public find_index(socket_id: string) {
-        return this._players.findIndex(({ id }) => id == socket_id);
+        return this.players.findIndex(({ id }) => id == socket_id);
     }
 
     public get_members() {
-        console.log(this._players);
-        return this._players.map(
+        return this.players.map(
             ({ id, ready }) => ({ id: beautify(id), ready })
         );
     }
 
+    public get_scheme() {
+        return { ...this.scheme };
+    }
+
+    public is_full() {
+        return this.players.length == this.scheme.player_limit;
+    }
+
     public join(socket_id: string) {
-        if (this._players.length == this._scheme.player_limit) {
+        if (this.is_full()) {
             return false;
         }
         if (this.find_index(socket_id) != -1) {
             return false;
         }
-        this._players.push({ id: socket_id, ready: false });
+        this.players.push({ id: socket_id, ready: false });
 
         RoomWatcher.emit('join', this);
 
@@ -200,13 +193,13 @@ export class Room implements IRoom {
         if (i == -1) {
             return;
         }
-        this._players[i].ready = ready;
+        this.players[i].ready = ready;
 
         RoomWatcher.emit('ready', this, i);
     }
 
     public start() {
-        if (!this._players.every(({ ready }) => ready)) {
+        if (!this.players.every(({ ready }) => ready)) {
             return;
         }
 
@@ -348,7 +341,7 @@ RoomWatcher
             'server:room#join',
             beautify(room.players.slice(-1)[0].id)
         );
-        if (room.players.length == room.scheme.player_limit) {
+        if (room.is_full()) {
             RoomWatcher.emit('full', room.id);
         }
         if (room.players.length == 1) {
