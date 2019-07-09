@@ -1,15 +1,7 @@
 const { floor, pow, random } = Math;
 
-/**
- * Current random permutation.
- */
 var id: IterableIterator<number>;
 
-/**
- * Generator of random permutation (1 .. N).
- * Pure.
- * @param N
- */
 function* ShuffledGenerator(N: number) {
     let index = 0;
     let order = shuffle([...new Array(N).keys()]);
@@ -18,12 +10,6 @@ function* ShuffledGenerator(N: number) {
     }
 }
 
-/**
- * Random shuffle on array.
- * Pure (except for `Math.random()`).
- * @param array
- * @returns same array, randomly shuffled.
- */
 function shuffle(array: any[]) {
     for (let i = array.length - 1; i != 0; --i) {
         let j = floor(random() * (i + 1));
@@ -32,48 +18,25 @@ function shuffle(array: any[]) {
     return array;
 }
 
-/**
- * Digits of beautiful ids.
- */
 var digits: string[];
+var id_length: number;
 
-/**
- * Length of beautiful ids.
- */
-var idLength: number;
-
-/**
- * Casts given number to the beautiful base.
- * Pure.
- * @param num a number.
- * @returns string in result of cast.
- */
 function to_string(num: number) {
     let ans = '', n = digits.length;
-    for (let i = 0; i != idLength; ++i) {
+    for (let i = 0; i != id_length; ++i) {
         ans += `-${digits[num % n]}`;
         num = floor(num / n);
     }
     return ans.substr(1);
 }
 
-/**
- * Prepares generator of beautiful ids.
- * Has no side effects.
- * @param words digits of beautiful ids.
- * @param length length of beautiful ids.
- */
 export function init_id_generator(words: string[], length: number) {
     digits = words;
-    idLength = length;
+    id_length = length;
     const N = pow(digits.length, length);
     id = ShuffledGenerator(N);
 };
 
-/**
- * Returns a new beautiful id.
- * Only shifts an iterator on permutation.
- */
 export function next_id() {
     let nxt = id.next();
     if (nxt.done) {
@@ -82,15 +45,9 @@ export function next_id() {
     return to_string(nxt.value);
 };
 
-/**
- * Casts several first chars of given id to the beatiful id.
- * Pure.
- * @param socket_id given id.
- * @returns casted chars.
- */
-export function beautify(socket_id: string) {
-    let number = socket_id
-        .substr(0, idLength)
+export function beautify(id: string) {
+    let number = id
+        .substr(0, id_length)
         .split('')
         .map(char => char.charCodeAt(0) % digits.length)
         .reduce((number, digit) => number * digits.length + digit);

@@ -1,6 +1,3 @@
-/**
- * Game parameters list.
- */
 export interface Scheme {
     // TODO: Scheme
     player_limit: number;

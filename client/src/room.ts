@@ -44,7 +44,7 @@ async function main() {
     }
     let me = join_result.me;
 
-    let members = await request(`/.room.get_members/id=${room_id}`, 'json');
+    let members = await request(`/.room.get_players/id=${room_id}`, 'json');
     for (let { id, ready } of members) {
         display_socket(id, ready, id == me, id == members[0].id);
     }

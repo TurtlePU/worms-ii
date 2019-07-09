@@ -152,7 +152,7 @@ export class Game implements IGame {
         if (i == -1) {
             return false;
         }
-        this.players[i].join_with(last_id, this.scheme);
+        this.players[i].join_with(last_id, this.scheme.player_scheme);
 
         GameWatcher.emit('join', this, i);
 
