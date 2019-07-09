@@ -1,6 +1,14 @@
 {
     "player_limit": 4,
     "player_scheme": {
-        "worm_limit": 4
+        "weapons": [],
+        "worm_count": 4,
+        "worm_hp": 100,
+        "worm_name": [
+            [ "Alpha", "Beta", "Gamma", "Delta" ],
+            [ "D'Artagnan", "Athos", "Porthos", "Aramis" ],
+            [ "Will", "Irma", "Taranee", "Cornelia" ],
+            [ "Bloom", "Stella", "Flora", "Muse" ]
+        ]
     }
 }

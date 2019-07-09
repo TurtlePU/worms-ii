@@ -5,9 +5,11 @@ import path    from 'path';
 import socket  from 'socket.io';
 
 import { init_id_generator } from './id-gen';
-import { setup_pages, pages } from './pages';
+import { setup_pages, pages } from './util';
 import { RoomWatcher, on_room_events, on_room_requests, Room } from './room';
-import { on_game_events, on_game_requests, Game } from './game';
+
+import { setup_game_api } from './game/api';
+import { Game } from './game/class';
 
 import words from '../data/id-digits.json';
 
@@ -30,10 +32,9 @@ app.get('/', (_, res) => {
 });
 
 on_room_requests(app);
-on_game_requests(app);
-
 on_room_events(io);
-on_game_events(io);
+
+setup_game_api(app, io);
 
 RoomWatcher.on('start', (room: Room) => {
     new Game(room);

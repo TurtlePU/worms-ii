@@ -4,7 +4,7 @@ import SocketIO from 'socket.io';
 
 import { next_id, beautify } from './id-gen';
 import { Scheme } from './scheme';
-import { pages } from './pages';
+import { pages } from './util';
 
 import default_scheme from '../data/schemes/default.json';
 
