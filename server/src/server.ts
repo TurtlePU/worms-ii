@@ -1,15 +1,18 @@
 import express from 'express';
-import http    from 'http';
-import os      from 'os';
-import path    from 'path';
-import socket  from 'socket.io';
+import http from 'http';
+import os from 'os';
+import path from 'path';
+import socket from 'socket.io';
 
 import { init_id_generator } from './id-gen';
 import { setup_pages, pages } from './util';
-import { RoomWatcher, on_room_events, on_room_requests, Room } from './room';
 
 import { setup_game_api } from './game/api';
 import { Game } from './game/class';
+
+import { setup_room_api } from './room/api';
+import { Room } from './room/class';
+import { RoomWatcher } from './room/watcher';
 
 import words from '../data/id-digits.json';
 
@@ -31,12 +34,10 @@ app.get('/', (_, res) => {
     res.sendFile(pages.get('index'));
 });
 
-on_room_requests(app);
-on_room_events(io);
-
+setup_room_api(app, io);
 setup_game_api(app, io);
 
-RoomWatcher.on('start', (room: Room) => {
+RoomWatcher.instance().on('start', (room: Room) => {
     new Game(room);
 });
 
