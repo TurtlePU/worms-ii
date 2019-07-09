@@ -69,7 +69,7 @@ async function main() {
         .on('server:game#start', () => {
             Cookie.set('id', socket.id);
             Cookie.set('room', room_id);
-            window.location.href = `game/${room_id}`;
+            window.location.href = `/game=${room_id}/player=${socket.id}`;
         });
 }
 

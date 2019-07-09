@@ -4,12 +4,10 @@ import SocketIO         from 'socket.io';
 
 import { pages } from './pages';
 import { Room } from './room';
-import { Player } from './player';
+import { Player, ID_TYPE } from './player';
 import { Scheme } from './scheme';
 
 import default_scheme from '../data/schemes/default.json';
-
-// player ID is a first socket ID with which a player entered the game
 
 /**
  * Events:
@@ -17,86 +15,29 @@ import default_scheme from '../data/schemes/default.json';
  */
 export const GameWatcher = new EventEmitter();
 
-/**
- * Interface of a `Game`.
- */
 export interface IGame {
-    /**
-     * Getter of scheme used for the game.
-     * Must be pure.
-     */
     get_scheme(): Scheme;
-
-    /**
-     * Checks if game has player with given id.
-     * Must be pure.
-     * @param socket_id id with which a player started the game.
-     * @returns true if player with given id started this game.
-     */
-    has(socket_id: string): boolean;
-
-    /**
-     * Hides player with given id from players queue.
-     * Must have no side effects.
-     * @param socket_id last known id of a player.
-     */
-    hide_player(socket_id: string): void;
-
-    /**
-     * Game lets in a player, if it plays this game.
-     * Must have no side effects.
-     * @param first_id saved id of a player.
-     * @param last_id current id of a player.
-     * @returns true if join was successful.
-     */
+    has_player(first_id: string): boolean;
+    hide_player(last_id: string): void;
     join(first_id: string, last_id: string): boolean;
-
-    /**
-     * Tells the game that player is ready.
-     * Must have no side effects.
-     * @param socket_id current id of a player.
-     */
-    set_ready(socket_id: string): void;
+    set_ready(last_id: string): void;
 }
 
-/**
- * Represents game itself.
- */
+// TODO: @emits [Game]
+
 export class Game implements IGame {
-    /**
-     * Collection of live games.
-     */
     public static games = new Map<string, Game>();
 
-    /**
-     * Returns `Game` by given id.
-     * Pure.
-     * @param game_id id of a game.
-     * @returns `Game` by given id.
-     */
     public static get(game_id: string) {
         return this.games.get(game_id) || dummy;
     }
 
-    /**
-     * Unique identifier of a game.
-     */
     public readonly id: string;
 
-    /**
-     * List of players in the game.
-     */
     public players: Player[];
 
-    /**
-     * Scheme used in the game.
-     */
     protected scheme: Scheme;
 
-    /**
-     * Creates an instance of Game.
-     * @param room Room which started a game.
-     */
     public constructor(room: Room) {
         this.id = room.id;
         this.scheme = room.get_scheme();
@@ -105,29 +46,17 @@ export class Game implements IGame {
         GameWatcher.emit('new', this);
     }
 
-    /**
-     * Checks if game is ready to start.
-     * Pure.
-     * @returns true if game can start (and hasn't already started).
-     */
     public can_start() {
         // TODO: can_start [Game]
         // correct state + everyone joined at least once
         return false;
     }
 
-    /**
-     * Returns index of a player with given id.
-     * Pure.
-     * @param socket_id id of a player.
-     * @param first true if given id is the `first_id` of a player.
-     * @returns index of a player with given id.
-     */
-    private find_index(socket_id: string, first?: boolean) {
-        if (first) {
-            return this.players.findIndex(({ first_id }) => first_id == socket_id);
+    protected player_index(player_id: string, type: ID_TYPE) {
+        if (type == ID_TYPE.first) {
+            return this.players.findIndex(({ first_id }) => first_id == player_id);
         } else {
-            return this.players.findIndex(({ last_id }) => last_id == socket_id);
+            return this.players.findIndex(({ last_id }) => last_id == player_id);
         }
     }
 
@@ -135,12 +64,12 @@ export class Game implements IGame {
         return { ...this.scheme };
     }
 
-    public has(socket_id: string) {
-        return this.find_index(socket_id, true) != -1;
+    public has_player(first_id: string) {
+        return this.player_index(first_id, ID_TYPE.first) != -1;
     }
 
-    public hide_player(socket_id: string) {
-        let i = this.find_index(socket_id);
+    public hide_player(last_id: string) {
+        let i = this.player_index(last_id, ID_TYPE.last);
         if (i == -1) {
             return;
         }
@@ -148,7 +77,7 @@ export class Game implements IGame {
     }
 
     public join(first_id: string, last_id: string) {
-        let i = this.find_index(first_id, true);
+        let i = this.player_index(first_id, ID_TYPE.first);
         if (i == -1) {
             return false;
         }
@@ -159,8 +88,8 @@ export class Game implements IGame {
         return true;
     }
 
-    public set_ready(socket_id: string) {
-        let i = this.find_index(socket_id);
+    public set_ready(last_id: string) {
+        let i = this.player_index(last_id, ID_TYPE.last);
         if (i == -1) {
             return;
         }
@@ -169,24 +98,16 @@ export class Game implements IGame {
         GameWatcher.emit('ready', this, i);
     }
 
-    /**
-     * Starts the game loop.
-     */
     public start() {
         // TODO: start [Game]
         GameWatcher.emit('start', this);
     }
 }
 
-/**
- * Appends HTTP request listeners (part of Game API).
- * No side effects.
- * @param app an Express app.
- */
 export function on_game_requests(app: express.Application) {
-    app.get('/game=:game_id?/socket=:socket_id?', (req, res) => {
+    app.get('/game=:game_id?/player=:player_id?', (req, res) => {
         res.sendFile(pages.get(
-            Game.get(req.params.game_id).has(req.params.socket_id)
+            Game.get(req.params.game_id).has_player(req.params.player_id)
             ? 'game' : 'notfound'
         ));
     });
@@ -198,11 +119,6 @@ export function on_game_requests(app: express.Application) {
  */
 var io: SocketIO.Server;
 
-/**
- * Appends SocketIO event listeners (part of Game API).
- * No side effects.
- * @param _io Socket.IO Server.
- */
 export function on_game_events(_io: SocketIO.Server) {
     (io = _io).on('connection', (socket) => {
         // TODO: game events
@@ -229,7 +145,7 @@ export function on_game_events(_io: SocketIO.Server) {
 
 const dummy: IGame = {
     get_scheme: () => ({ ...default_scheme }),
-    has: (_) => false,
+    has_player: (_) => false,
     hide_player: (_) => {},
     join: (_, __) => false,
     set_ready: (_) => {},

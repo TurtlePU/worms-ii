@@ -19,7 +19,7 @@ function main() {
     b_rand = <HTMLButtonElement> $('b-rand');
     inp_room = <HTMLInputElement> $('inp-room');
 
-    a_back.href += Cookie.get('room');
+    a_back.href = `/game=${Cookie.get('room')}/player=${Cookie.get('id')}`;
 
     a_join.addEventListener('click', () => {
         a_join.href += inp_room.value.replace(/\s/g, '');

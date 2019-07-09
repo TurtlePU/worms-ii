@@ -34,6 +34,10 @@ export class Player {
     }
 }
 
+export enum ID_TYPE {
+    first, last
+}
+
 export enum Weapon {
     // TODO: weapons list
 }
