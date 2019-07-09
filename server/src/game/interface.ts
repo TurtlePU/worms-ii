@@ -1,4 +1,4 @@
-import { Scheme } from '../scheme';
+import { Scheme } from '../util/scheme-interface';
 
 export interface IGame {
     get_scheme(): Scheme;

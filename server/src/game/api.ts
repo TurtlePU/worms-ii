@@ -1,7 +1,7 @@
 import * as Express from 'express';
 import SocketIO from 'socket.io';
 
-import { pages } from '../util';
+import { pages } from '../util/pages';
 
 import { game_watcher } from './watcher';
 import { dummy } from './dummy';

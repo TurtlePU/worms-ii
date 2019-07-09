@@ -1,5 +1,5 @@
-import { Room } from '../room';
-import { Scheme } from '../scheme';
+import { Room } from '../room/class';
+import { Scheme } from '../util/scheme-interface';
 
 import { Player } from './engine/player';
 import { PlayerIdType } from './engine/player-id-types';

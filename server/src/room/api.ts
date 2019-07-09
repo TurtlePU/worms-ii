@@ -1,8 +1,8 @@
 import * as Express from 'express';
 import SocketIO from 'socket.io';
 
-import { beautify } from '../id-gen';
-import { pages } from '../util';
+import { beautify } from '../util/id-gen';
+import { pages } from '../util/pages';
 
 import { Room } from './class';
 import { dummy } from './dummy';

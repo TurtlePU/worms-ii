@@ -1,9 +1,9 @@
-import { beautify } from '../../id-gen';
-import { PlayerScheme } from '../../scheme';
+import { beautify } from '../../util/id-gen';
+import { PlayerScheme } from '../../util/scheme-interface';
 
 import { Ammo } from './ammo';
 import { Worm } from './worm';
-import { array_map } from '../../util';
+import { array_map } from '../../util/other';
 import { Weapon } from './weapon-types';
 
 export class Player {

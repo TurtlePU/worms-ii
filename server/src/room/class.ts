@@ -1,7 +1,7 @@
 import { IRoom } from './interface';
 import { PlayerState } from './player-state';
-import { Scheme } from '../scheme';
-import { next_id, beautify } from '../id-gen';
+import { Scheme } from '../util/scheme-interface';
+import { next_id, beautify } from '../util/id-gen';
 
 import default_scheme from '../../data/schemes/default.json';
 import { RoomWatcher } from './watcher';

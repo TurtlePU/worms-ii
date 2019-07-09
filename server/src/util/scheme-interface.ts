@@ -1,4 +1,4 @@
-import { Ammo } from './game/engine/ammo';
+import { Ammo } from '../game/engine/ammo';
 
 export interface Scheme {
     player_limit: number;
