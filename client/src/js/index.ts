@@ -1,5 +1,5 @@
-import * as Cookie from './js/cookie';
-import { $, request } from './js/util';
+import Cookie from './lib/cookie';
+import { $, request } from './lib/util';
 
 /** Reconnect button. */
 var a_back: HTMLAnchorElement;
@@ -22,7 +22,7 @@ function main() {
     a_back.href = `/game=${Cookie.get('room')}/player=${Cookie.get('id')}`;
 
     a_join.addEventListener('click', () => {
-        a_join.href += inp_room.value.replace(/\s/g, '');
+        a_join.href = `/room=${inp_room.value.replace(/\s/g, '')}`;
     });
 
     b_rand.addEventListener('click', async () => {

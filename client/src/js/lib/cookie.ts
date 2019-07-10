@@ -1,11 +1,11 @@
-export function get(name: string) {
+function get(name: string) {
     var matches = document.cookie.match(new RegExp(
         "(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"
     ));
     return matches ? decodeURIComponent(matches[1]) : undefined;
 }
 
-export function set(name: string, value: string, options: { expires?: number | Date | string } = {}) {
+function set(name: string, value: string, options: { expires?: number | Date | string } = {}) {
     if (options.expires) {
         if (typeof options.expires == 'number') {
             let d = new Date();
@@ -30,3 +30,5 @@ export function set(name: string, value: string, options: { expires?: number | D
 
     document.cookie = updatedCookie;
 }
+
+export default { get, set };

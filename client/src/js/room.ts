@@ -1,7 +1,7 @@
 import io from 'socket.io-client';
 
-import * as Cookie from './js/cookie';
-import { $, fail, request } from './js/util';
+import Cookie from './lib/cookie';
+import { $, fail, request } from './lib/util';
 
 /** Checkbox for state: ready/not ready. */
 var inp_ready: HTMLInputElement;

@@ -1,6 +1,6 @@
 import io from 'socket.io-client';
 
-import * as Cookie from './js/cookie';
+import Cookie from './lib/cookie';
 
 var socket: SocketIOClient.Socket;
 
