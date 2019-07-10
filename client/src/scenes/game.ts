@@ -45,6 +45,7 @@ export default class GameScene extends OverlayedScene {
         }) as ErrType | { me: PublicPlayerInfo, scheme: Scheme };
 
         if (is_error(join_result)) {
+            this.socket.disconnect();
             this.scene.start('JoinScene', join_result);
         } else {
             this.me = join_result.me;

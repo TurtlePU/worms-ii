@@ -2,7 +2,7 @@ import 'phaser';
 import io from 'socket.io-client';
 
 import Cookie from '../lib/cookie';
-import { request, ErrType, is_error, try_start_game } from '../lib/util';
+import { request, ErrType, is_error } from '../lib/util';
 
 import OverlayedScene from './overlayed';
 
@@ -56,8 +56,10 @@ export default class RoomScene extends OverlayedScene {
     }
 
     protected setup_overlay_behavior(): void {
-        this.b_back.onclick = () =>
+        this.b_back.onclick = () => {
+            this.socket.disconnect();
             this.scene.start('JoinScene');
+        }
 
         this.b_start.onclick = () =>
             this.socket.emit('client:room#start');
@@ -86,7 +88,13 @@ export default class RoomScene extends OverlayedScene {
             .on('server:game#start', async () => {
                 Cookie.set('id', this.socket.id);
                 Cookie.set('room', this.room_id);
-                try_start_game.call(this);
+                let check_result = await request(
+                    `/.game.has_player/game=${this.room_id}/player=${this.socket.id}`,
+                'json') as CheckResponse;
+                if (check_result.response) {
+                    this.socket.disconnect();
+                    this.scene.start('GameScene');
+                }
             });
     }
 
@@ -97,6 +105,7 @@ export default class RoomScene extends OverlayedScene {
         });
 
         if (is_error(join_result)) {
+            this.socket.disconnect();
             this.scene.start('JoinScene', join_result);
         } else {
             this.me = join_result.me;
