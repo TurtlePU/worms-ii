@@ -1,4 +1,5 @@
 import 'phaser';
+import io from 'socket.io-client';
 
 import Cookie from '../lib/cookie';
 
@@ -48,6 +49,7 @@ export default class GameScene extends OverlayedScene {
         } else {
             this.me = join_result.me;
             this.scheme = join_result.scheme;
+            console.log('succ');
         }
     }
 

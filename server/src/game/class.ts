@@ -16,12 +16,13 @@ export class Game implements IGame {
     /** @emits GameWatcher#new_game */
     public constructor(room: Room) {
         this.id = room.id;
+        this.looping = false;
+        this.scheme = room.get_scheme();
+
         this.players = room.players.map(
             ({ id }, i) => new Player(id, i, this.scheme.player_scheme)
         );
-        this.looping = false;
-        this.scheme = room.get_scheme();
-        
+
         GameWatcher.instance.emit('new_game', this);
     }
 
@@ -78,6 +79,7 @@ export class Game implements IGame {
     }
 
     public start() {
+        console.log('start loop!!!');
         // TODO: start [Game]
         // game_watcher.emit('game_loop_start', this);
     }

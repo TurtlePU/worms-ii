@@ -16,8 +16,8 @@ export default abstract class OverlayedScene extends Phaser.Scene {
 
     /** Always call super. */
     public create() {
-        this.overlay = this.add.dom(400, 300).createFromCache(`${this.scene.key}-overlay`);
-        this.overlay.setPerspective(800);
+        let { width, height } = this.game.canvas;
+        this.overlay = this.add.dom(width / 2, height / 2).createFromCache(`${this.scene.key}-overlay`);
         this.setup_overlay_fields();
         this.setup_overlay_behavior();
     }
