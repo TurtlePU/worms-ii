@@ -1,22 +1,26 @@
-declare interface CheckResponse {
+declare type ErrType = {
+    error: string;
+}
+
+declare type CheckResponse = {
     response: boolean;
 }
 
-declare interface PlayerState {
+declare type PlayerState = {
     id: string;
     ready: boolean;
 }
 
-declare interface PublicPlayerInfo {
+declare type PublicPlayerInfo = {
     //
 }
 
-declare interface Scheme {
+declare type Scheme = {
     player_limit: number;
     player_scheme: PlayerScheme;
 }
 
-declare interface PlayerScheme {
+declare type PlayerScheme = {
     weapons: {
         name: string,
         amount: number,

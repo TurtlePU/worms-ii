@@ -1,3 +1,5 @@
+/// <reference path="../../../shared/types.d.ts"/>
+
 import Cookie from './cookie';
 
 export type ErrType = { error: string };
