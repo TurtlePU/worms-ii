@@ -1,7 +1,6 @@
-import * as Phaser from 'phaser';
+/// <reference path="../../../shared/types.d.ts"/>
 
-import { PlayerScheme } from 'shared/scheme-interface';
-import { PublicPlayerInfo } from 'shared/public-player-info';
+import * as Phaser from 'phaser';
 
 import { beautify } from 'util/id-gen';
 import { array_map } from 'util/other';

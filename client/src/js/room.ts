@@ -1,6 +1,6 @@
-import io from 'socket.io-client';
+/// <reference path="../../../shared/types.d.ts"/>
 
-import { PlayerState } from 'shared/player-state';
+import io from 'socket.io-client';
 
 import Cookie from './lib/cookie';
 import { $, fail, request, ErrType, is_error } from './lib/util';

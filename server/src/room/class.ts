@@ -1,5 +1,4 @@
-import { PlayerState } from 'shared/player-state';
-import { Scheme } from 'shared/scheme-interface';
+/// <reference path="../../../shared/types.d.ts"/>
 
 import { next_id, beautify } from 'util/id-gen';
 

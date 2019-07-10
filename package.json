@@ -35,7 +35,6 @@
   },
   "alias": {
     "data": "./server/data",
-    "shared": "./shared",
     "util": "./server/src/util"
   }
 }

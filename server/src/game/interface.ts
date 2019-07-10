@@ -1,5 +1,4 @@
-import { Scheme } from 'shared/scheme-interface';
-import { PublicPlayerInfo } from 'shared/public-player-info';
+/// <reference path="../../../shared/types.d.ts"/>
 
 export interface IGame {
     get_scheme(): Scheme;

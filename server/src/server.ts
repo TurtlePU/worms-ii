@@ -37,7 +37,7 @@ app.get('/', (_, res) => {
 setup_room_api(app, io);
 setup_game_api(app, io);
 
-RoomWatcher.instance().on('start', (room: Room) => {
+RoomWatcher.instance.on('start', (room: Room) => {
     new Game(room);
 });
 

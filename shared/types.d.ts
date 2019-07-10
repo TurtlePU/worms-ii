@@ -1,9 +1,18 @@
-export interface Scheme {
+declare interface PlayerState {
+    id: string;
+    ready: boolean;
+}
+
+declare interface PublicPlayerInfo {
+    //
+}
+
+declare interface Scheme {
     player_limit: number;
     player_scheme: PlayerScheme;
 }
 
-export interface PlayerScheme {
+declare interface PlayerScheme {
     weapons: {
         name: string,
         amount: number,

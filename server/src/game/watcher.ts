@@ -3,7 +3,7 @@ import SocketIO from 'socket.io';
 
 import { Game } from './class';
 import { dummy } from './dummy';
-import { Player } from './engine/player';
+import { Player } from './player';
 
 export class GameWatcher extends EventEmitter {
     public static readonly instance = new GameWatcher();

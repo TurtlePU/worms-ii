@@ -1,7 +1,6 @@
-import io from 'socket.io-client';
+/// <reference path="../../../shared/types.d.ts"/>
 
-import { PublicPlayerInfo } from 'shared/public-player-info';
-import { Scheme } from 'shared/scheme-interface';
+import io from 'socket.io-client';
 
 import Cookie from './lib/cookie';
 import { ErrType, is_error, fail } from './lib/util';

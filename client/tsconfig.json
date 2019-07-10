@@ -1,9 +1,5 @@
 {
     "compilerOptions": {
-        "baseUrl": ".",
         "esModuleInterop": true,
-        "paths": {
-            "shared/*": ["../shared/*"]
-        }
     }
 }

@@ -1,11 +1,10 @@
-import { Scheme } from 'shared/scheme-interface';
+/// <reference path="../../../shared/types.d.ts"/>
 
 import { Room } from '../room/class';
 
 import { IGame } from './interface';
+import { Player, PlayerIdType } from './player';
 import { GameWatcher } from './watcher';
-
-import { Player, PlayerIdType } from './engine/player';
 
 export class Game implements IGame {
     public readonly id: string;

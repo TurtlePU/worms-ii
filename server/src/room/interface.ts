@@ -1,4 +1,4 @@
-import { PlayerState } from 'shared/player-state';
+/// <reference path="../../../shared/types.d.ts"/>
 
 export interface IRoom {
     add_player(player_id: string): boolean;
