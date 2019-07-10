@@ -1,4 +1,4 @@
-import { PlayerState } from './player-state';
+import { PlayerState } from 'shared/player-state';
 
 export interface IRoom {
     add_player(player_id: string): boolean;

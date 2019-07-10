@@ -1,7 +1,9 @@
 import io from 'socket.io-client';
 
+import { PlayerState } from 'shared/player-state';
+
 import Cookie from './lib/cookie';
-import { $, fail, request } from './lib/util';
+import { $, fail, request, ErrType, is_error } from './lib/util';
 
 /** Checkbox for state: ready/not ready. */
 var inp_ready: HTMLInputElement;
@@ -34,17 +36,17 @@ async function main() {
 
     socket = io();
 
-    let join_result = await new Promise((resolve, reject) => {
+    let join_result: ErrType | { me: string } = await new Promise((resolve, reject) => {
         socket.emit('client:room#join', room_id, resolve);
         setTimeout(reject, 10000);
-    }) as ErrType | { me: string };
+    });
 
     if (is_error(join_result)) {
         return fail(join_result.error);
     }
     let me = join_result.me;
 
-    let members = await request(`/.room.get_players/id=${room_id}`, 'json');
+    let members: PlayerState[] = await request(`/.room.get_players/id=${room_id}`, 'json');
     for (let { id, ready } of members) {
         display_socket(id, ready, id == me, id == members[0].id);
     }
@@ -99,10 +101,4 @@ function first_sign(first: boolean) {
     return first ? '🥇' : '';
 }
 
-function is_error(res: ErrType | { me: string }): res is ErrType {
-    return (res as ErrType).error !== undefined;
-}
-
 main();
-
-type ErrType = { error: string };

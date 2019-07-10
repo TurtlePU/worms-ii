@@ -1,10 +1,12 @@
-import { IRoom } from './interface';
-import { PlayerState } from './player-state';
-import { Scheme } from '../util/scheme-interface';
-import { next_id, beautify } from '../util/id-gen';
+import { PlayerState } from 'shared/player-state';
+import { Scheme } from 'shared/scheme-interface';
 
-import default_scheme from '../../data/schemes/default.json';
+import { next_id, beautify } from 'util/id-gen';
+
+import { IRoom } from './interface';
 import { RoomWatcher } from './watcher';
+
+import default_scheme from 'data/schemes/default.json';
 
 export class Room implements IRoom {
     public readonly id: string;
@@ -19,7 +21,7 @@ export class Room implements IRoom {
         this.players = [];
         this.scheme = default_scheme;
 
-        RoomWatcher.instance().emit('new_room', this);
+        RoomWatcher.instance.emit('new_room', this);
     }
 
     /** @emits RoomWatcher#player_joined */
@@ -32,7 +34,7 @@ export class Room implements IRoom {
         }
         this.players.push({ id: player_id, ready: false });
 
-        RoomWatcher.instance().emit('player_joined', this);
+        RoomWatcher.instance.emit('player_joined', this);
 
         return true;
     }
@@ -45,7 +47,7 @@ export class Room implements IRoom {
         }
         this.players.splice(i, 1);
 
-        RoomWatcher.instance().emit('player_left', this, player_id, i);
+        RoomWatcher.instance.emit('player_left', this, player_id, i);
     }
 
     public get_players() {
@@ -74,7 +76,7 @@ export class Room implements IRoom {
         }
         this.players[i].ready = ready;
 
-        RoomWatcher.instance().emit('player_ready', this, i);
+        RoomWatcher.instance.emit('player_ready', this, i);
     }
 
     /** @emits RoomWatcher#game_started */
@@ -83,6 +85,6 @@ export class Room implements IRoom {
             return;
         }
 
-        RoomWatcher.instance().emit('game_started', this);
+        RoomWatcher.instance.emit('game_started', this);
     }
 }

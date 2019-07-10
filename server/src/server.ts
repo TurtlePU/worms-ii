@@ -4,8 +4,8 @@ import os from 'os';
 import path from 'path';
 import socket from 'socket.io';
 
-import { init_id_generator } from './util/id-gen';
-import { setup_pages, pages } from './util/pages';
+import { init_id_generator } from 'util/id-gen';
+import { setup_pages, pages } from 'util/pages';
 
 import { setup_game_api } from './game/api';
 import { Game } from './game/class';
@@ -14,7 +14,7 @@ import { setup_room_api } from './room/api';
 import { Room } from './room/class';
 import { RoomWatcher } from './room/watcher';
 
-import words from '../data/id-digits.json';
+import words from 'data/id-digits.json';
 
 const folder = process.env.DEV_SERVER ? 'dist' : 'build';
 const port   = +process.env.PORT || 3000;

@@ -1,8 +1,14 @@
+export type ErrType = { error: string };
+
 /**
  * Shortcut for `document.getElementById`.
  */
 export function $ (id: string) {
     return document.getElementById(id);
+}
+
+export function is_error<T> (obj: ErrType | T): obj is ErrType {
+    return (obj as ErrType).error !== undefined;
 }
 
 export function fail(msg: string) {

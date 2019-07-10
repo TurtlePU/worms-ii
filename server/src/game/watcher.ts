@@ -3,12 +3,15 @@ import SocketIO from 'socket.io';
 
 import { Game } from './class';
 import { dummy } from './dummy';
+import { Player } from './engine/player';
 
 export class GameWatcher extends EventEmitter {
+    public static readonly instance = new GameWatcher();
+
     protected games: Map<string, Game>;
     protected io: SocketIO.Server;
 
-    constructor() {
+    protected constructor() {
         super();
 
         this.games = new Map();
@@ -43,29 +46,18 @@ export class GameWatcher extends EventEmitter {
         this.io.to(game.id).emit('server:game#start');
     }
 
-    protected on_player_hidden(game: Game, player_index: number) {
-        this.io.to(game.id).emit(
-            'server:game#hidden',
-            game.players[player_index].public_id()
-        );
+    protected on_player_hidden(game: Game, player: Player) {
+        this.io.to(game.id).emit('server:game#hidden', player.public_id());
     }
 
-    protected on_player_joined(game: Game, player_index: number) {
-        this.io.to(game.id).emit(
-            'server:game#join',
-            game.players[player_index].public_info()
-        );
+    protected on_player_joined(game: Game, player: Player) {
+        this.io.to(game.id).emit('server:game#join', player.public_info());
     }
 
-    protected on_player_ready(game: Game, player_index: number) {
-        this.io.to(game.id).emit(
-            'server:game#ready',
-            game.players[player_index].public_id()
-        );
+    protected on_player_ready(game: Game, player: Player) {
+        this.io.to(game.id).emit('server:game#ready', player.public_id());
         if (game.can_start()) {
             game.start();
         }
     }
 }
-
-export const game_watcher = new GameWatcher();

@@ -1,19 +1,17 @@
-import { Room } from '../room/class';
-import { Scheme } from '../util/scheme-interface';
+import { Scheme } from 'shared/scheme-interface';
 
-import { Player } from './engine/player';
-import { PlayerIdType } from './engine/player-id-types';
+import { Room } from '../room/class';
 
 import { IGame } from './interface';
-import { game_watcher } from './watcher';
+import { GameWatcher } from './watcher';
+
+import { Player, PlayerIdType } from './engine/player';
 
 export class Game implements IGame {
     public readonly id: string;
 
-    public players: Player[];
-
     protected looping: boolean;
-
+    protected players: Player[];
     protected scheme: Scheme;
 
     /** @emits GameWatcher#new_game */
@@ -25,7 +23,7 @@ export class Game implements IGame {
         this.looping = false;
         this.scheme = room.get_scheme();
         
-        game_watcher.emit('new_game', this);
+        GameWatcher.instance.emit('new_game', this);
     }
 
     public can_start() {
@@ -34,6 +32,14 @@ export class Game implements IGame {
 
     public get_scheme() {
         return { ...this.scheme };
+    }
+
+    public get_me(first_id: string) {
+        let i = this.player_index(first_id, PlayerIdType.FIRST);
+        if (i == -1) {
+            return;
+        }
+        return this.players[i].public_info();
     }
 
     public has_player(first_id: string) {
@@ -47,7 +53,7 @@ export class Game implements IGame {
         }
         this.players[i].online = false;
 
-        game_watcher.emit('player_hidden', this, i);
+        GameWatcher.instance.emit('player_hidden', this, this.players[i]);
     }
 
     public join(first_id: string, last_id: string) {
@@ -57,7 +63,7 @@ export class Game implements IGame {
         }
         this.players[i].join_with(last_id, this.scheme.player_scheme);
 
-        game_watcher.emit('player_joined', this, i);
+        GameWatcher.instance.emit('player_joined', this, this.players[i]);
 
         return true;
     }
@@ -69,7 +75,7 @@ export class Game implements IGame {
         }
         this.players[i].ready = true;
 
-        game_watcher.emit('player_ready', this, i);
+        GameWatcher.instance.emit('player_ready', this, this.players[i]);
     }
 
     public start() {

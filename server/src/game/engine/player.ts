@@ -1,9 +1,11 @@
-import { beautify } from '../../util/id-gen';
-import { PlayerScheme } from '../../util/scheme-interface';
+import * as Phaser from 'phaser';
 
-import { Ammo } from './ammo';
-import { Worm } from './worm';
-import { array_map } from '../../util/other';
+import { PlayerScheme } from 'shared/scheme-interface';
+import { PublicPlayerInfo } from 'shared/public-player-info';
+
+import { beautify } from 'util/id-gen';
+import { array_map } from 'util/other';
+
 import { Weapon } from './weapon-types';
 
 export class Player {
@@ -14,8 +16,16 @@ export class Player {
     public online: boolean;
     public ready: boolean;
 
-    protected weapons: Ammo[];
-    protected worms: Worm[];
+    protected weapons: {
+        amount: number,
+        delay: number
+    }[];
+
+    protected worms: {
+        hp: number;
+        name: string;
+        position: Phaser.Geom.Point;
+    }[];
 
     public constructor(id: string, index: number, scheme: PlayerScheme) {
         this.first_id = id;
@@ -23,12 +33,13 @@ export class Player {
         this.online = false;
         this.ready = false;
         this.weapons = array_map(Weapon.count, (index) => ({
-            ...scheme.weapons[index]
+            amount: scheme.weapons[index].amount,
+            delay: scheme.weapons[index].delay
         }));
         this.worms = array_map(scheme.worm_count, (jndex) => ({
             hp: scheme.worm_hp,
             name: scheme.worm_name[index][jndex],
-            position: { x: 0, y: 0 }
+            position: new Phaser.Geom.Point()
         }));
     }
 
@@ -48,7 +59,10 @@ export class Player {
         return beautify(this.first_id);
     }
 
-    public public_info() {
+    public public_info(): PublicPlayerInfo {
         // TODO public_info [Player]
+        return {};
     }
 }
+
+export enum PlayerIdType { FIRST, LAST }

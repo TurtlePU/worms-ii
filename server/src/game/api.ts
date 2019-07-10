@@ -1,21 +1,21 @@
 import * as Express from 'express';
 import SocketIO from 'socket.io';
 
-import { pages } from '../util/pages';
+import { pages } from 'util/pages';
 
-import { game_watcher } from './watcher';
+import { GameWatcher } from './watcher';
 import { dummy } from './dummy';
 
 export function setup_game_api(app: Express.Application, io: SocketIO.Server) {
     setup_express_requests(app);
     setup_socket_events(io);
-    game_watcher.use(io);
+    GameWatcher.instance.use(io);
 }
 
 function setup_express_requests(app: Express.Application) {
     app.get('/game=:game_id?/player=:player_id?', (req, res) => {
         res.sendFile(pages.get(
-            game_watcher.get(req.params.game_id).has_player(req.params.player_id)
+            GameWatcher.instance.get(req.params.game_id).has_player(req.params.player_id)
             ? 'game' : 'notfound'
         ));
     });
@@ -26,10 +26,10 @@ function setup_socket_events(io: SocketIO.Server) {
         var game = dummy;
         socket
             .on('client:game#join', (game_id: string, socket_id: string, ack: (result: any) => void) => {
-                game = game_watcher.get(game_id);
+                game = GameWatcher.instance.get(game_id);
                 socket.join(game_id);
                 if (game.join(socket_id, socket.id)) {
-                    ack({ scheme: game.get_scheme() });
+                    ack({ scheme: game.get_scheme(), me: game.get_me(socket_id) });
                 } else {
                     socket.leave(game_id);
                     ack({ error: `Failed to join game ${game_id}.` });

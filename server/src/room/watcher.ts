@@ -1,7 +1,7 @@
 import { EventEmitter } from 'events';
 import SocketIO from 'socket.io';
 
-import { beautify } from '../util/id-gen';
+import { beautify } from 'util/id-gen';
 
 import { Room } from './class';
 import { dummy } from './dummy';
@@ -15,14 +15,7 @@ import { dummy } from './dummy';
  * * `player_ready(room: Room, player_index: number)`
  */
 export class RoomWatcher extends EventEmitter {
-    protected static _instance: RoomWatcher;
-
-    public static instance() {
-        if (RoomWatcher._instance == undefined) {
-            RoomWatcher._instance = new RoomWatcher();
-        }
-        return RoomWatcher._instance;
-    }
+    public static readonly instance = new RoomWatcher();
 
     protected lobbies = new Set<string>();
     protected rooms = new Map<string, Room>();
