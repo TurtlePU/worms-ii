@@ -1,9 +1,7 @@
 /// <reference path="../../../shared/types.d.ts"/>
 
-import * as Phaser from 'phaser';
-
-import { beautify } from 'util/id-gen';
-import { array_map } from 'util/other';
+import { beautify } from '~/util/id-gen';
+import { array_map } from '~/util/other';
 
 import { Weapon } from './weapon-types';
 
@@ -23,7 +21,7 @@ export class Player {
     protected worms: {
         hp: number;
         name: string;
-        position: Phaser.Geom.Point;
+        position: any;
     }[];
 
     public constructor(id: string, index: number, scheme: PlayerScheme) {
@@ -38,7 +36,7 @@ export class Player {
         this.worms = array_map(scheme.worm_count, (jndex) => ({
             hp: scheme.worm_hp,
             name: scheme.worm_name[index][jndex],
-            position: new Phaser.Geom.Point()
+            position: {}
         }));
     }
 

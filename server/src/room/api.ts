@@ -1,8 +1,7 @@
 import * as Express from 'express';
 import SocketIO from 'socket.io';
 
-import { beautify } from 'util/id-gen';
-import { pages } from 'util/pages';
+import { beautify } from '~/util/id-gen';
 
 import { Room } from './class';
 import { dummy } from './dummy';
@@ -16,11 +15,11 @@ export function setup_room_api(app: Express.Application, io: SocketIO.Server) {
 
 function on_room_requests(application: Express.Application) {
     application
-        .get('/room=:room_id?', (req, res) => {
-            res.sendFile(pages.get(
-                RoomWatcher.instance.can_join(req.params.room_id)
-                ? 'room' : 'notfound'
-            ));
+        .get('/.room.can_join/id=:room_id?', (req, res) => {
+            res.send({
+                response: RoomWatcher.instance
+                    .can_join(req.params.room_id)
+            } as CheckResponse);
         })
         .get('/.room.join_id', (_, res) => {
             if (!RoomWatcher.instance.has_lobbies()) {
@@ -28,7 +27,7 @@ function on_room_requests(application: Express.Application) {
             }
             res.send(RoomWatcher.instance.join_id());
         })
-        .get('/.room.get_players/id=:room_id', (req, res) => {
+        .get('/.room.get_players/id=:room_id?', (req, res) => {
             res.send(RoomWatcher.instance.get(req.params.room_id).get_players());
         });
 }

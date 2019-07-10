@@ -1,11 +1,11 @@
 /// <reference path="../../../shared/types.d.ts"/>
 
-import { next_id, beautify } from 'util/id-gen';
+import { next_id, beautify } from '~/util/id-gen';
 
 import { IRoom } from './interface';
 import { RoomWatcher } from './watcher';
 
-import default_scheme from 'data/schemes/default.json';
+import default_scheme from '~/../data/schemes/default.json';
 
 export class Room implements IRoom {
     public readonly id: string;

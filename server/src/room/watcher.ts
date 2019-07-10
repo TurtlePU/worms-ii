@@ -1,7 +1,7 @@
 import { EventEmitter } from 'events';
 import SocketIO from 'socket.io';
 
-import { beautify } from 'util/id-gen';
+import { beautify } from '~/util/id-gen';
 
 import { Room } from './class';
 import { dummy } from './dummy';

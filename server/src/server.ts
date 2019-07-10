@@ -4,8 +4,7 @@ import os from 'os';
 import path from 'path';
 import socket from 'socket.io';
 
-import { init_id_generator } from 'util/id-gen';
-import { setup_pages, pages } from 'util/pages';
+import { init_id_generator } from './util/id-gen';
 
 import { setup_game_api } from './game/api';
 import { Game } from './game/class';
@@ -14,24 +13,24 @@ import { setup_room_api } from './room/api';
 import { Room } from './room/class';
 import { RoomWatcher } from './room/watcher';
 
-import words from 'data/id-digits.json';
+import words from '../data/id-digits.json';
 
 const folder = process.env.DEV_SERVER ? 'dist' : 'build';
 const port   = +process.env.PORT || 3000;
 
 const client_dir = path.join(__dirname, `../../client/${folder}/`);
 
-setup_pages(client_dir);
 init_id_generator(words, 3);
 
 const app = express();
 const server = new http.Server(app);
 const io = socket(server);
 
-app.use(express.static(client_dir));
+app.use('/', express.static(client_dir));
+app.use('/assets', express.static(path.join(__dirname, '../../client/assets')));
 
 app.get('/', (_, res) => {
-    res.sendFile(pages.get('index'));
+    res.sendFile(path.join(client_dir, 'index.html'));
 });
 
 setup_room_api(app, io);

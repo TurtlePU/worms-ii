@@ -1,3 +1,7 @@
+declare interface CheckResponse {
+    response: boolean;
+}
+
 declare interface PlayerState {
     id: string;
     ready: boolean;

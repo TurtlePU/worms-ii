@@ -1,8 +1,6 @@
 import * as Express from 'express';
 import SocketIO from 'socket.io';
 
-import { pages } from 'util/pages';
-
 import { GameWatcher } from './watcher';
 import { dummy } from './dummy';
 
@@ -13,11 +11,11 @@ export function setup_game_api(app: Express.Application, io: SocketIO.Server) {
 }
 
 function setup_express_requests(app: Express.Application) {
-    app.get('/game=:game_id?/player=:player_id?', (req, res) => {
-        res.sendFile(pages.get(
-            GameWatcher.instance.get(req.params.game_id).has_player(req.params.player_id)
-            ? 'game' : 'notfound'
-        ));
+    app.get('/.game.has_player/game=:game_id?/player=:player_id?', (req, res) => {
+        res.send({
+            response: GameWatcher.instance
+                .get(req.params.game_id).has_player(req.params.player_id)
+        } as CheckResponse);
     });
 }
 
