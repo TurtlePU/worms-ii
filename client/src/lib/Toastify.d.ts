@@ -21,6 +21,7 @@ declare module 'toastify-js' {
         hideToast(): void;
     }
 
+    /** Type of options object passed in the module function. */
     export type ToastOptions = Partial<{
         /** Text of a toast. Defaults to 'Hi there!'. */
         text: string;
