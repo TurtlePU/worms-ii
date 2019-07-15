@@ -1,7 +1,8 @@
 import 'phaser';
+import Toastify from 'toastify-js';
 
 import Cookie from '../lib/Cookie';
-import { request, ErrType, is_error, game_has_player } from '../lib/util';
+import { $, request, ErrType, is_error, game_has_player } from '../lib/util';
 
 import OverlayedScene from './overlayed';
 
@@ -13,18 +14,19 @@ export default class RoomScene extends OverlayedScene
     protected b_start: HTMLButtonElement;
     /** Checkbox for state: ready/not ready. */
     protected inp_ready: HTMLInputElement;
+    /** For copying room id. */
+    protected inp_room_id: HTMLInputElement;
     /** List of players. */
     protected t_room: HTMLTableSectionElement;
 
     protected me: string;
+    protected ready: boolean;
     protected room_id: string;
     protected socket: SocketIOClient.Socket;
-    protected watcher: EventTarget;
 
     public constructor ()
     {
         super({ key: 'room' }, 'assets/overlay/room.html');
-        this.watcher = new EventTarget();
     }
 
     public init (
@@ -33,21 +35,25 @@ export default class RoomScene extends OverlayedScene
             socket: SocketIOClient.Socket
         }
     ) {
+        this.ready = false;
         this.room_id = args.room_id;
-        this.socket = args.socket;
-        this.setup_socket();
-        this.validate();
+        if (!this.socket) {
+            this.socket = args.socket;
+            this.setup_socket();
+        }
     }
 
     public create ()
     {
         super.create();
+        this.validate()
+            .then(() => this.show_members())
+            .then(() => this.ready = true);
+    }
 
-        if (!this.me) {
-            this.watcher.addEventListener('me-set', () => this.show_members());
-        } else {
-            this.show_members();
-        }
+    public is_ready ()
+    {
+        return this.ready && this.scene.isActive();
     }
 
     protected display_socket (
@@ -56,7 +62,7 @@ export default class RoomScene extends OverlayedScene
         is_me?: boolean,
         first?: boolean
     ) {
-        if (this.$(`socket-${id}`)) {
+        if ($(`socket-${id}`)) {
             return;
         }
         let row = this.t_room.insertRow();
@@ -71,10 +77,11 @@ export default class RoomScene extends OverlayedScene
 
     protected setup_overlay_fields ()
     {
-        this.b_back = <HTMLButtonElement> this.$('b-back');
-        this.b_start = <HTMLButtonElement> this.$('b-start');
-        this.inp_ready = <HTMLInputElement> this.$('inp-ready');
-        this.t_room = <HTMLTableSectionElement> this.$('t-room');
+        this.b_back = <HTMLButtonElement> $('b-back');
+        this.b_start = <HTMLButtonElement> $('b-start');
+        this.inp_ready = <HTMLInputElement> $('inp-ready');
+        this.inp_room_id = <HTMLInputElement> $('inp-room-id');
+        this.t_room = <HTMLTableSectionElement> $('t-room');
     }
 
     protected setup_overlay_behavior ()
@@ -82,41 +89,68 @@ export default class RoomScene extends OverlayedScene
         this.b_back.onclick = () => {
             this.socket.emit('client:room#leave');
             this.scene.start('join', { socket: this.socket });
-        }
+        };
 
         this.b_start.onclick = () => {
             this.socket.emit('client:room#start');
-        }
+        };
 
         this.inp_ready.onclick = () => {
             this.socket.emit('client:room#ready', this.inp_ready.checked);
-        }
+        };
+
+        this.inp_room_id.value = this.room_id;
+
+        this.inp_room_id.addEventListener('click', () => {
+            this.inp_room_id.select();
+            document.execCommand('copy');
+            this.inp_room_id.setSelectionRange(0, 0);
+            Toastify({
+                text: 'Copied to clipboard!',
+                duration: 1000,
+                position: 'center',
+                gravity: 'bottom',
+                selector: 'popups'
+            }).showToast();
+        });
     }
 
     protected setup_socket ()
     {
         this.socket
             .on('server:room#join', (id: string) => {
-                this.display_socket(id);
+                if (this.is_ready()) {
+                    this.display_socket(id, false, this.me == id);
+                }
             })
             .on('server:room#ready', (id: string, ready: boolean) => {
-                this.$(`ready-${id}`).innerHTML = ready_sign(ready);
+                if (this.is_ready()) {
+                    $(`ready-${id}`).innerHTML = ready_sign(ready);
+                }
             })
             .on('server:room#first', (id: string) => {
-                this.$(`first-${id}`).innerHTML = first_sign(true);
+                if (this.is_ready()) {
+                    $(`first-${id}`).innerHTML = first_sign(true);
+                }
             })
             .on('server:room#enable', (enabled: boolean) => {
-                this.b_start.disabled = !enabled;
+                if (this.is_ready()) {
+                    this.b_start.disabled = !enabled;
+                }
             })
             .on('server:room#leave', (id: string) => {
-                this.t_room.removeChild(this.$(`socket-${id}`));
+                if (this.is_ready()) {
+                    this.t_room.removeChild($(`socket-${id}`));
+                }
             })
             .on('server:game#start', async () => {
-                Cookie.set('id', this.socket.id);
-                Cookie.set('room', this.room_id);
-                let res = await game_has_player(this.room_id, this.socket.id);
-                if (res.response) {
-                    this.scene.start('game', { socket: this.socket });
+                if (this.is_ready()) {
+                    Cookie.set('id', this.socket.id);
+                    Cookie.set('room', this.room_id);
+                    let res = await game_has_player(this.room_id, this.socket.id);
+                    if (res.response) {
+                        this.scene.start('game', { socket: this.socket });
+                    }
                 }
             });
     }
@@ -129,10 +163,9 @@ export default class RoomScene extends OverlayedScene
         }) as ErrType | { me: string };
 
         if (is_error(join_result)) {
-            this.scene.start('join', { error: join_result.error, socket: this.socket });
+            throw this.scene.start('join', { error: join_result.error, socket: this.socket });
         } else {
             this.me = join_result.me;
-            this.watcher.dispatchEvent(new Event('me-set'));
         }
     }
 

@@ -38,10 +38,11 @@ function on_room_events(io: SocketIO.Server) {
         socket
             .on('client:room#join', (room_id, clb) => {
                 room = RoomWatcher.instance.get(room_id);
+                socket.join(room_id);
                 if (room.add_player(socket.id)) {
-                    socket.join(room_id);
                     clb({ me: beautify(socket.id) });
                 } else {
+                    socket.leave(room_id);
                     clb({ error: `Failed to join room ${room_id}.` });
                 }
             })

@@ -32,11 +32,6 @@ export default abstract class OverlayedScene extends Phaser.Scene
         this.setup_overlay_behavior();
     }
 
-    protected $ (id: string)
-    {
-        return this.overlay.getChildByID(id);
-    }
-
     protected abstract setup_overlay_behavior () : void;
 
     protected abstract setup_overlay_fields () : void;

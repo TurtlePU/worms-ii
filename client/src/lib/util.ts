@@ -1,5 +1,9 @@
 /// <reference path="../../../shared/types.d.ts"/>
 
+export function $ (id: string) {
+    return document.getElementById(id);
+}
+
 export type ErrType = { error: string };
 
 export function is_error<T> (obj: ErrType | T) : obj is ErrType {

@@ -1,6 +1,6 @@
 import 'phaser';
 
-import { request, game_has_player } from '../lib/util';
+import { $, request, game_has_player } from '../lib/util';
 import Cookie from '../lib/Cookie';
 
 import OverlayedScene from './overlayed';
@@ -33,10 +33,10 @@ export default class JoinScene extends OverlayedScene
 
     protected setup_overlay_fields ()
     {
-        this.b_back = <HTMLButtonElement> this.$('b-back');
-        this.b_join = <HTMLButtonElement> this.$('b-join');
-        this.b_rand = <HTMLButtonElement> this.$('b-rand');
-        this.inp_room = <HTMLInputElement> this.$('inp-room');
+        this.b_back = <HTMLButtonElement> $('b-back');
+        this.b_join = <HTMLButtonElement> $('b-join');
+        this.b_rand = <HTMLButtonElement> $('b-rand');
+        this.inp_room = <HTMLInputElement> $('inp-room');
     }
 
     protected setup_overlay_behavior ()
