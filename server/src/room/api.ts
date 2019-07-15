@@ -48,6 +48,9 @@ function on_room_events(io: SocketIO.Server) {
             .on('client:room#ready', (ready) => {
                 room.set_ready(socket.id, ready);
             })
+            .on('client:room#leave', () => {
+                room.delete_player(socket.id);
+            })
             .on('client:room#start', () => {
                 if (room.player_index(socket.id) == 0) {
                     room.start_game();
